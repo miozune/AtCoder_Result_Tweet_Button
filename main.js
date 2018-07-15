@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         AtCoder_Result_Tweet_Button
 // @namespace    https://greasyfork.org/ja/scripts/370227
-// @version      1.1.0
-// @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します beta版サイトでのみ動作します
+// @version      1.1.3
+// @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します
 // @author       miozune
 // @license      MIT
-// @supportURL   https://twitter.com/miozune
+// @supportURL   https://github.com/miozune/AtCoder_Result_Tweet_Button
 // @match        https://beta.atcoder.jp/users/*
 // @match        https://atcoder.jp/user/*
 // @exclude      https://beta.atcoder.jp/users/*/history/json
@@ -14,6 +14,8 @@
 
 if(location.href.split("//")[1].substr(0,4) != "beta") {
     alert('このサイトはbeta版ではありません\nAtCoder_Result_Tweet_Buttonはbeta版でのみ動作します')
+} else if(userScreenName != location.href.split("/")[4]) {
+    ; // 自分のユーザーページでなければボタンを表示しない
 }
 
 
