@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AtCoder_Result_Tweet_Button
 // @namespace    https://greasyfork.org/ja/scripts/370227
-// @version      1.1.3
+// @version      1.1.4
 // @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します
 // @author       miozune
 // @license      MIT
@@ -33,13 +33,11 @@ else {
 
         var buttonStr = getButtonStr(contestResults);
 
-        var tweetScript = `<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>`;
         var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}" class="btn btn-info pull-right" style="width:${getButtonWidth(contestResults)}px; height:${getButtonHeight(contestResults)}px" rel="nofollow" onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;">${buttonStr}</a>`; // ボタンのスタイルはBootstrapで指定
 
         var insertElem = location.href.split("/").length === 5 ? document.getElementsByTagName("p")[1] : document.getElementsByClassName("checkbox")[0]; // プロフィール or コンテスト成績表
 
         insertElem.insertAdjacentHTML('beforebegin',tweetButton);
-        insertElem.insertAdjacentHTML('beforebegin',tweetScript);
 
 
         function getTweetStr(contestResults) {
@@ -153,7 +151,6 @@ else {
     function getContestResults() {
         // JQueryのAjax関数; Getでurlからデータを取得し、JSONとして解釈する
         // userScreenNameはbeta.atcoder.jpのグローバル変数
-        // 現在のurlから取得しないのは間違って別ユーザーのデータをツイートしないようにするため
         // atcoder.jp(非beta版サイト)はuserScreenNameおよび/history/jsonをサポートしていない
         return $.ajax({
             type: 'GET',
