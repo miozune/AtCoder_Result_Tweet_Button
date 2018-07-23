@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AtCoder_Result_Tweet_Button
 // @namespace    https://greasyfork.org/ja/scripts/370227
-// @version      1.1.4
+// @version      1.1.5
 // @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します
 // @author       miozune
 // @license      MIT
@@ -12,9 +12,9 @@
 // ==/UserScript==
 
 
-if(location.href.split("//")[1].substr(0,4) != "beta") {
-    alert('このサイトはbeta版ではありません\nAtCoder_Result_Tweet_Buttonはbeta版でのみ動作します')
-} else if(userScreenName != location.href.split("/")[4]) {
+if(!document.URL.match('//beta')) {
+    alert('このサイトはbeta版ではありません\nAtCoder_Result_Tweet_Buttonはbeta版でのみ動作します');
+} else if(!document.URL.match(`/${userScreenName}`)) {
     ; // 自分のユーザーページでなければボタンを表示しない
 }
 
@@ -23,40 +23,55 @@ else {
     //$.ajaxからデータ取得、これが終わってからメイン処理に移る
     getContestResults()
         .then(function(data) {
-        main(data);
-        console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
-    })
+            main(data);
+            console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
+        })
 
 
     function main(contestResults) {
-        var tweetStr = getTweetStr(contestResults);
+        var tweetStr = getTweetStr();
 
-        var buttonStr = getButtonStr(contestResults);
+        var buttonStr = getButtonStr();
 
-        var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}" class="btn btn-info pull-right" style="width:${getButtonWidth(contestResults)}px; height:${getButtonHeight(contestResults)}px" rel="nofollow" onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;">${buttonStr}</a>`; // ボタンのスタイルはBootstrapで指定
+        var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
+                              class="btn btn-info pull-right"
+                              style="width:${getButtonWidth()}px; height:${getButtonHeight()}px"
+                              rel="nofollow"
+                              onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;">
+                           ${buttonStr}</a>`;
+                          // ボタンのスタイルはBootstrapで指定
+                          // hrefはdecode -> encodeがよいが、この方法だと'+'がencodeされないので直打ちしている
 
-        var insertElem = location.href.split("/").length === 5 ? document.getElementsByTagName("p")[1] : document.getElementsByClassName("checkbox")[0]; // プロフィール or コンテスト成績表
-
+        var insertElem = getInsertElem();
         insertElem.insertAdjacentHTML('beforebegin',tweetButton);
 
+        if(document.URL.match('/history')) {
+            // 位置調節
+            document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
+        }
 
-        function getTweetStr(contestResults) {
+
+        function getTweetStr() {
             if (contestResults.length === 0) {
                 return `@chokudai AtCoder初参加します！`;
             }
 
             else {
-                //sample1
-                //1970/1/1 AtCoder Beginner Contest 999
-                //Rank: 1(rated)
-                //Perf: 1600(highest!)(inner: 9999)
-                //Rating: 9999(+9999, highest!)
+                /*
+                sample1
+                1970/1/1 AtCoder Beginner Contest 999
+                Rank: 1(rated)
+                Perf: 1600(highest!)(inner: 9999)
+                Rating: 9999(+9999, highest!)
+                */
 
-                //sample2
-                //1970/1/1 AtCoder Beginner Contest 999
-                //Rank: 1(unrated)
-                //Perf: 0
-                //Rating: 9999(+0)
+                /*
+                sample2
+                1970/1/1 AtCoder Beginner Contest 999
+                Rank: 1(unrated)
+                Perf: 0
+                Rating: 9999(+0)
+                */
 
 
                 var latestContestResult = contestResults[contestResults.length - 1];
@@ -88,6 +103,7 @@ else {
 
                     return `${contestDate} ${contestName}%0aRank: ${rank}(${isRated})%0aPerf: ${performance}${performanceIsHighest}${innerPerformance}%0aRating: ${newRating}(${ratingDiffString}${ratingIsHighest})`;
 
+
                     function performanceIsHighest_func(performance) {
                         var performanceHistory = [];
                         for (var i=0; i<contestResults.length; i++) {
@@ -108,7 +124,7 @@ else {
         }
 
 
-        function getButtonStr(contestResults) {
+        function getButtonStr() {
             if (contestResults.length === 0) {
                 return `ツイート`;
             } else {
@@ -119,7 +135,7 @@ else {
             }
         }
 
-        function getButtonWidth(contestResults) {
+        function getButtonWidth() {
             if (contestResults.length === 0) {
                 return 130;
             } else {
@@ -129,7 +145,7 @@ else {
             }
         }
 
-        function getButtonHeight(contestResults) {
+        function getButtonHeight() {
             if (contestResults.length === 0) {
                 return 35;
             } else {
@@ -144,6 +160,17 @@ else {
             var month = endtime.substr(5, 1).replace('0', '') + endtime.substr(6, 1);
             var day = endtime.substr(8, 1).replace('0', '') + endtime.substr(9, 1);
             return `${year}/${month}/${day}`;
+        }
+
+
+        function getInsertElem() {
+            if(document.URL.match('/history')) {
+                // コンテスト成績表
+                return document.getElementById('history_wrapper');
+            } else {
+                // プロフィール
+                return document.getElementsByTagName("p")[1];
+            }
         }
     }
 
