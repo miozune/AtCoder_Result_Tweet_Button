@@ -11,6 +11,7 @@
 // @exclude      https://beta.atcoder.jp/users/*/history/json
 // ==/UserScript==
 
+(() => {
 if(!document.URL.match('//beta')) {
 	var betaLink = "beta".link(getBetaURL())
 	$("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}版ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}版でのみ動作します`));
@@ -36,9 +37,10 @@ getContestResults()
         console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
     })
 
+
 function main(contestResults) {
 
-    var tweetStr = getTweetStr();
+	var tweetStr = getTweetStr();
 
     var buttonStr = getButtonStr();
 
@@ -58,8 +60,7 @@ function main(contestResults) {
         // 位置調節
         document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
     }
-
-
+	
     function getTweetStr() {
         if (contestResults.length === 0) {
             return `@chokudai AtCoder初参加します！`;
@@ -203,3 +204,4 @@ function settings() {
 		localStorage.setItem(lsKey, JSON.stringify(settings));
 	}
 }
+})();
