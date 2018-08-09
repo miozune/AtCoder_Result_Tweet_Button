@@ -29,9 +29,6 @@ if (!document.URL.match(`/${userScreenName}`)) {
 	return;
 }
 
-var settings = {};
-settings.dateFormat = "l";
-
 //$.ajaxからデータ取得、これが終わってからメイン処理に移る
 getContestResults()
     .then(function(data) {
@@ -168,8 +165,7 @@ function main(contestResults) {
 		var time = moment(endtime);
 		return time.format(settings.dateFormat);
     }
-
-
+	
     function getInsertElem() {
         if(document.URL.match('/history')) {
             // コンテスト成績表
@@ -190,4 +186,20 @@ function getContestResults() {
         dataType: 'json',
         url: `/users/${userScreenName}/history/json`
     });
+}
+
+function settings() {
+	const lsKey = 'AtCoder_Result_Tweet_Button_Settings'
+
+	//他ウィンドウで設定が更新された時に設定を更新
+	window.addEventListener("storage", function (event) {
+		if (event.storageArea !== lsKey) return;
+		settings = JSON.stringify(event.newValue);
+	})
+	function getSettingsFromLS() {
+		settings = JSON.parse(localStorage.getItem(lsKey));
+	}
+	function setSettingsToLS() {
+		localStorage.setItem(lsKey, JSON.stringify(settings));
+	}
 }
