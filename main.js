@@ -13,8 +13,17 @@
 
 
 if(!document.URL.match('//beta')) {
-	alert('このサイトはbeta版ではありません\nAtCoder_Result_Tweet_Buttonはbeta版でのみ動作します');
+	var betaLink = "beta".link(getBetaURL())
+	$("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}版ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}版でのみ動作します`));
 	return;
+
+	function getWarning(content) {
+		return `<div class="alert alert-warning" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="閉じる"><span aria-hidden="true">×</span></button>${content}</div>`;
+	}
+
+	function getBetaURL() {
+		return `https://beta.atcoder.jp${document.location.pathname.replace('user', 'users')}`
+	}
 }
 if (!document.URL.match(`/${userScreenName}`)) {
 	 // 自分のユーザーページでなければボタンを表示しない
