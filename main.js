@@ -11,7 +11,6 @@
 // @exclude      https://beta.atcoder.jp/users/*/history/json
 // ==/UserScript==
 
-
 if(!document.URL.match('//beta')) {
 	var betaLink = "beta".link(getBetaURL())
 	$("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}版ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}版でのみ動作します`));
@@ -30,6 +29,8 @@ if (!document.URL.match(`/${userScreenName}`)) {
 	return;
 }
 
+var settings = {};
+settings.dateFormat = "l";
 
 //$.ajaxからデータ取得、これが終わってからメイン処理に移る
 getContestResults()
@@ -38,8 +39,8 @@ getContestResults()
         console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
     })
 
-
 function main(contestResults) {
+
     var tweetStr = getTweetStr();
 
     var buttonStr = getButtonStr();
@@ -133,8 +134,7 @@ function main(contestResults) {
             }
         }
     }
-
-
+	
     function getButtonStr() {
         if (contestResults.length === 0) {
             return `ツイート`;
@@ -163,14 +163,10 @@ function main(contestResults) {
             return 75;
         }
     }
-
-
-    function getDate(endtime) {
-        // 2000-01-01 => 2000/1/1
-        var year = endtime.substr(0, 4);
-        var month = endtime.substr(5, 1).replace('0', '') + endtime.substr(6, 1);
-        var day = endtime.substr(8, 1).replace('0', '') + endtime.substr(9, 1);
-        return `${year}/${month}/${day}`;
+	
+	function getDate(endtime) {
+		var time = moment(endtime);
+		return time.format(settings.dateFormat);
     }
 
 
