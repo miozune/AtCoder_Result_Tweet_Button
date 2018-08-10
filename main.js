@@ -31,6 +31,14 @@ if (!document.URL.match(`/${userScreenName}`)) {
 
 var settings = {};
 settings.dateFormat = 'Y/M/D'
+settings.tweetFormat = 
+`\${ContestDate} \${ContestName}
+Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
+Perf: \${Performance}\${PerformanceHighestString}\${(InnerPerformance !== Performance) ? \`(inner:\${InnerPerformance})\` : ''}
+Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
+settings.RatingHighestString = ', highest!';
+settings.PerformanceHighestString = '(highest!)';
+
 var contestResults;
 
 appendStyles();
@@ -112,15 +120,16 @@ function drawTweetBtn() {
 
     var buttonStr = getButtonStr();
 
-    var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
+	var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
                             class="btn btn-info pull-right"
                             rel="nofollow"
                             onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
                             id="${buttonID}">
                         ${buttonStr}</a>`;
                         // ボタンのスタイルはBootstrapで指定
-                        // hrefはdecode -> encodeがよいが、この方法だと'+'がencodeされないので直打ちしている
+                        // hrefはURI用のエンコーダ(encodeURIComponent)を使用し、+や改行もいい感じで処理するようにした
 
+	console.log(tweetButton);
 
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
@@ -149,19 +158,21 @@ function drawTweetBtn() {
 
         var ContestDate = getDate(contestResult.EndTime);
         var ContestName = contestResult.ContestName;
+		var ContestScreenName = contestResult.ContestScreenName;
         var Rank = contestResult.Place;
 		var IsRated = contestResult.IsRated;
 		var RatingIsHighest = contestResult.RatingIsHighest;
-		var RatingHighestString = RatingIsHighest ? ', highest!' : '';
+		var RatingHighestString = RatingIsHighest ? settings.RatingHighestString : '';
 		var PerformanceIsHighest = contestResult.PerformanceIsHighest;
-		var PerformanceHighestString = PerformanceIsHighest?'(highest!)': '';
+		var PerformanceHighestString = PerformanceIsHighest ? settings.PerformanceHighestString : '';
         var Performance = contestResult.Performance;
         var InnerPerformance = contestResult.InnerPerformance;
         var NewRating = contestResult.NewRating;
 		var OldRating = contestResult.OldRating;
-		var Diff = `${(contestResult.Diff >= 0) ? '%2b' : ''}${contestResult.Diff}`; //+ or -;
+		var Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`; //+ or -;
 
-		return `${ContestDate} ${ContestName}%0aRank: ${Rank}(${IsRated?'rated':'unrated'})%0aPerf: ${Performance}${PerformanceHighestString}${(InnerPerformance !== Performance)?`(inner:${InnerPerformance})`:''}%0aRating: ${NewRating}(${Diff}${RatingHighestString})`;
+		var tweetStr = eval(`\`${settings.tweetFormat}\``);
+		return encodeURIComponent(tweetStr);
     }
 	
     function getButtonStr() {
