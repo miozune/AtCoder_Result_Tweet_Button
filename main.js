@@ -37,12 +37,14 @@ var contestResults;
 getContestResults()
     .then(function(data) {
 		contestResults = data;
-        main();
+        drawTweetBtn();
         console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
     })
 
 
-function main() {
+function drawTweetBtn() {
+
+	const buttonID = 'result-tweet-btn';
 
 	var tweetStr = getTweetStr();
 
@@ -52,10 +54,14 @@ function main() {
                             class="btn btn-info pull-right"
                             style="width:${getButtonWidth()}px; height:${getButtonHeight()}px"
                             rel="nofollow"
-                            onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;">
+                            onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
+                            id="${buttonID}">
                         ${buttonStr}</a>`;
                         // ボタンのスタイルはBootstrapで指定
                         // hrefはdecode -> encodeがよいが、この方法だと'+'がencodeされないので直打ちしている
+
+	//挿入前にすでに要素が存在している場合、要素を削除
+	removeTweetBtn();
 
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
@@ -179,7 +185,11 @@ function main() {
             // プロフィール
             return document.getElementsByTagName("p")[1];
         }
-    }
+	}
+
+	function removeTweetBtn() {
+		$(`#${buttonID}`).remove();
+	}
 }
 
 function getContestResults() {
