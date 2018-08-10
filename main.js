@@ -33,6 +33,8 @@ if (!document.URL.match(`/${userScreenName}`)) {
 var settings = {};
 var contestResults;
 
+drawSettingsButton();
+
 //$.ajaxからデータ取得、これが終わってからメイン処理に移る
 getContestResults()
     .then(function(data) {
@@ -192,18 +194,7 @@ function drawTweetBtn() {
 	}
 }
 
-function getContestResults() {
-    // JQueryのAjax関数; Getでurlからデータを取得し、JSONとして解釈する
-    // userScreenNameはbeta.atcoder.jpのグローバル変数
-    // atcoder.jp(非beta版サイト)はuserScreenNameおよび/history/jsonをサポートしていない
-    return $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: `/users/${userScreenName}/history/json`
-    });
-}
-
-(() => {
+function drawSettingsButton() {
 	const lsKey = 'AtCoder_Result_Tweet_Button_Settings'
 	
 	//他ウィンドウで設定が更新された時に設定を更新
@@ -217,5 +208,16 @@ function getContestResults() {
 	function setSettingsToLS() {
 		localStorage.setItem(lsKey, JSON.stringify(settings));
 	}
-})();
+}
+
+function getContestResults() {
+    // JQueryのAjax関数; Getでurlからデータを取得し、JSONとして解釈する
+    // userScreenNameはbeta.atcoder.jpのグローバル変数
+    // atcoder.jp(非beta版サイト)はuserScreenNameおよび/history/jsonをサポートしていない
+    return $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: `/users/${userScreenName}/history/json`
+    });
+}
 })();
