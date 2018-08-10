@@ -10,7 +10,6 @@
 // @match        https://atcoder.jp/user/*
 // @exclude      https://beta.atcoder.jp/users/*/history/json
 // ==/UserScript==
-
 (() => {
 if(!document.URL.match('//beta')) {
 	var betaLink = "beta".link(getBetaURL())
@@ -30,15 +29,20 @@ if (!document.URL.match(`/${userScreenName}`)) {
 	return;
 }
 
+
+var settings = {};
+var contestResults;
+
 //$.ajaxからデータ取得、これが終わってからメイン処理に移る
 getContestResults()
     .then(function(data) {
-        main(data);
+		contestResults = data;
+        main();
         console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
     })
 
 
-function main(contestResults) {
+function main() {
 
 	var tweetStr = getTweetStr();
 
@@ -189,9 +193,9 @@ function getContestResults() {
     });
 }
 
-function settings() {
+(() => {
 	const lsKey = 'AtCoder_Result_Tweet_Button_Settings'
-
+	
 	//他ウィンドウで設定が更新された時に設定を更新
 	window.addEventListener("storage", function (event) {
 		if (event.storageArea !== lsKey) return;
@@ -203,5 +207,5 @@ function settings() {
 	function setSettingsToLS() {
 		localStorage.setItem(lsKey, JSON.stringify(settings));
 	}
-}
+})();
 })();
