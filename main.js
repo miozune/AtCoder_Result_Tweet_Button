@@ -29,32 +29,91 @@ if (!document.URL.match(`/${userScreenName}`)) {
 	return;
 }
 
-
 var settings = {};
+settings.dateFormat = 'Y/M/D'
 var contestResults;
+
+appendStyles();
 
 drawSettingsButton();
 
 //$.ajaxからデータ取得、これが終わってからメイン処理に移る
 getContestResults()
     .then(function(data) {
-		contestResults = data;
+		contestResults = shapeData(data);
         drawTweetBtn();
         console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
     })
 
+function appendStyles() {
+	const css =
+`a.result-tweet-btn-inline {
+    display: inline-block;
+    margin: -4px 2px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    background-image: url(/public/img/share/twitter.png);
+}
+`
+	$('head').append(`<style>${css}</style>`);
+}
+
+function shapeData(data){
+	//データを整形し、ContestScreenName/Diff/IsHighest(Rate|Perf)をいい感じにする
+	var maxPerf = -1;
+	var maxRate = -1;
+	for (var i = 0; i < data.length; i++) {
+		data[i].PerformanceIsHighest = data[i].Performance > maxPerf;
+		data[i].RatingIsHighest = data[i].NewRating > maxRate;
+		data[i].OldRating = i === 0 ? 0 : data[i - 1].NewRating;
+		data[i].Diff = data[i].NewRating - data[i].OldRating;
+		data[i].ContestScreenName = data[i].ContestScreenName.split('.')[0];
+
+		maxPerf = Math.max(maxPerf, data[i].Performance);
+		maxRate = Math.max(maxRate, data[i].NewRating);
+	}
+	return data;
+}
 
 function drawTweetBtn() {
 
 	const buttonID = 'result-tweet-btn';
 
-	var tweetStr = getTweetStr();
+	//挿入前に既存要素を削除
+	removeTweetBtn();
+
+	if(document.URL.match('/history$')) {
+		$('#history > tbody .text-left').each((i,elem) => {
+			var contestName = $('a', elem)[0].textContent;
+			var tweetButton = getInlineTweetButton(contestName);
+			$(elem).append(tweetButton);
+		})
+		// Tooltipの有効化
+		$('[data-toggle="tooltip"]').tooltip();
+        // 位置調節
+		document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
+
+		function getInlineTweetButton(contestName) {
+			var contestResult = contestResults.find(elem => elem.ContestName === contestName);
+			if (!contestResult) return;
+			var tweetStr = getTweetStr(contestResult);
+			return (
+`<a href="https://twitter.com/intent/tweet?text=${tweetStr}" 
+    class="result-tweet-btn-inline" rel="nofollow"
+    onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
+    data-toggle="tooltip"
+    data-original-title="この回の結果をツイート"></a>`);
+		}
+    }
+	
+	var tweetStr = contestResults.length === 0 ? `@chokudai AtCoder初参加します！` :  getTweetStr(contestResults[contestResults.length - 1]);
 
     var buttonStr = getButtonStr();
 
     var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
                             class="btn btn-info pull-right"
-                            style="width:${getButtonWidth()}px; height:${getButtonHeight()}px"
                             rel="nofollow"
                             onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
                             id="${buttonID}">
@@ -62,87 +121,47 @@ function drawTweetBtn() {
                         // ボタンのスタイルはBootstrapで指定
                         // hrefはdecode -> encodeがよいが、この方法だと'+'がencodeされないので直打ちしている
 
-	//挿入前にすでに要素が存在している場合、要素を削除
-	removeTweetBtn();
 
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
 
-    if(document.URL.match('/history')) {
-        // 位置調節
-        document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
-    }
 	
-    function getTweetStr() {
-        if (contestResults.length === 0) {
-            return `@chokudai AtCoder初参加します！`;
-        }
+	
+	function getTweetStr(contestResult) {
+        /*
+        sample1
+        1970/1/1 AtCoder Beginner Contest 999
+        Rank: 1(rated)
+        Perf: 1600(highest!)(inner: 9999)
+        Rating: 9999(+9999, highest!)
+        */
 
-        else {
-            /*
-            sample1
-            1970/1/1 AtCoder Beginner Contest 999
-            Rank: 1(rated)
-            Perf: 1600(highest!)(inner: 9999)
-            Rating: 9999(+9999, highest!)
-            */
-
-            /*
-            sample2
-            1970/1/1 AtCoder Beginner Contest 999
-            Rank: 1(unrated)
-            Perf: 0
-            Rating: 9999(+0)
-            */
+        /*
+        sample2
+        1970/1/1 AtCoder Beginner Contest 999
+        Rank: 1(unrated)
+        Perf: 0
+        Rating: 9999(+0)
+        */
+			
+        //console.log(contestResult);
 
 
-            var latestContestResult = contestResults[contestResults.length - 1];
+        var ContestDate = getDate(contestResult.EndTime);
+        var ContestName = contestResult.ContestName;
+        var Rank = contestResult.Place;
+		var IsRated = contestResult.IsRated;
+		var RatingIsHighest = contestResult.RatingIsHighest;
+		var RatingHighestString = RatingIsHighest ? ', highest!' : '';
+		var PerformanceIsHighest = contestResult.PerformanceIsHighest;
+		var PerformanceHighestString = PerformanceIsHighest?'(highest!)': '';
+        var Performance = contestResult.Performance;
+        var InnerPerformance = contestResult.InnerPerformance;
+        var NewRating = contestResult.NewRating;
+		var OldRating = contestResult.OldRating;
+		var Diff = `${(contestResult.Diff >= 0) ? '%2b' : ''}${contestResult.Diff}`; //+ or -;
 
-            console.log(latestContestResult);
-
-            var contestDate = getDate(latestContestResult.EndTime);
-            var contestName = latestContestResult.ContestName;
-            var rank = latestContestResult.Place;
-            var isRated = latestContestResult.IsRated ? 'rated' : 'unrated';
-            var performance = latestContestResult.Performance;
-            var innerPerformance = latestContestResult.InnerPerformance > performance ? `(inner: ${latestContestResult.InnerPerformance})` : ``;
-            var newRating = latestContestResult.NewRating;
-
-
-            if (contestResults.length === 1){
-                // コンテスト参加回数1回; 前回との比較およびhighest判定なし
-                return `${contestDate} ${contestName}%0aRank: ${rank}(${isRated})%0aPerf: ${performance}${innerPerformance}%0aRating: ${newRating}`;
-            }
-
-            else {
-                var secondLatestContestResult = contestResults[contestResults.length - 2];
-
-                var performanceIsHighest = performanceIsHighest_func(performance);
-                var previousRating = secondLatestContestResult.NewRating;
-                var ratingDiff = newRating - previousRating;
-                var ratingDiffString = (ratingDiff >= 0) ? `%2b${ratingDiff}` : `${ratingDiff}`; //+ or -
-                var ratingIsHighest = ratingIsHighest_func(newRating);
-
-                return `${contestDate} ${contestName}%0aRank: ${rank}(${isRated})%0aPerf: ${performance}${performanceIsHighest}${innerPerformance}%0aRating: ${newRating}(${ratingDiffString}${ratingIsHighest})`;
-
-
-                function performanceIsHighest_func(performance) {
-                    var performanceHistory = [];
-                    for (var i=0; i<contestResults.length; i++) {
-                        performanceHistory.push(contestResults[i].Performance);
-                    }
-                    return (Math.max.apply(null, performanceHistory) === performance) ? '(highest!)' : '';
-                }
-
-                function ratingIsHighest_func(rating) {
-                    var ratingHistory = [];
-                    for (var i=0; i<contestResults.length; i++) {
-                        ratingHistory.push(contestResults[i].NewRating);
-                    }
-                    return (Math.max.apply(null, ratingHistory) === newRating) ? ', highest!' : '';
-                }
-            }
-        }
+		return `${ContestDate} ${ContestName}%0aRank: ${Rank}(${IsRated?'rated':'unrated'})%0aPerf: ${Performance}${PerformanceHighestString}${(InnerPerformance !== Performance)?`(inner:${InnerPerformance})`:''}%0aRating: ${NewRating}(${Diff}${RatingHighestString})`;
     }
 	
     function getButtonStr() {
@@ -174,8 +193,8 @@ function drawTweetBtn() {
         }
     }
 	
-	function getDate(endtime) {
-		var time = moment(endtime);
+	function getDate(endtimestr) {
+		var time = moment(endtimestr);
 		return time.format(settings.dateFormat);
     }
 	
@@ -190,7 +209,7 @@ function drawTweetBtn() {
 	}
 
 	function removeTweetBtn() {
-		$(`#${buttonID}`).remove();
+		$(`#${buttonID} , .result-tweet-btn-inline`).remove();
 	}
 }
 
