@@ -234,6 +234,7 @@ function initSettingsArea() {
     $('#tweetbtn-settings textarea,#tweetbtn-settings input').keyup((() => {
         var newSettings = {};
         newSettings = settings;
+        settings.tweetFormat = $('#tweetbtn-settings-format').val();
         newSettings.dateFormat = $('#tweetbtn-settings-dateformat').val();
         newSettings.RatingHighestString = $('#tweetbtn-settings-highestrating').val();
         newSettings.PerformanceHighestString = $('#tweetbtn-settings-highestperformance').val();
@@ -247,11 +248,10 @@ function initSettingsArea() {
     }));
     drawSettingsArea();
     function drawSettingsArea() {
+        $('#tweetbtn-settings-format').val(settings.tweetFormat);
         $('#tweetbtn-settings-dateformat').val(settings.dateFormat);
-        $('#tweetbtn-settings-format').val(settings.tweetFormat);
-        $('#tweetbtn-settings-highestperformance').val(settings.PerformanceHighestString);
         $('#tweetbtn-settings-highestrating').val(settings.RatingHighestString);
-        $('#tweetbtn-settings-format').val(settings.tweetFormat);
+        $('#tweetbtn-settings-highestperformance').val(settings.PerformanceHighestString);
         var result = executeSample(settings);
         $('#tweet-str-settings-formatted').val(result[1]);
     }
