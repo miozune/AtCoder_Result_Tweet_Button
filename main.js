@@ -29,21 +29,11 @@ if (!document.URL.match(`/${userScreenName}`)) {
 	return;
 }
 
-var settings = {};
-settings.dateFormat = 'Y/M/D'
-settings.tweetFormat = 
-`\${ContestDate} \${ContestName}
-Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
-Perf: \${Performance}\${PerformanceHighestString}\${(InnerPerformance !== Performance) ? \`(inner:\${InnerPerformance})\` : ''}
-Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
-settings.RatingHighestString = ', highest!';
-settings.PerformanceHighestString = '(highest!)';
-
+var settings;
 var contestResults;
 
 appendStyles();
-
-drawSettingsButton();
+initSettingsArea();
 
 //$.ajaxからデータ取得、これが終わってからメイン処理に移る
 getContestResults()
@@ -63,6 +53,9 @@ function appendStyles() {
     cursor: pointer;
     border-radius: 4px;
     background-image: url(/public/img/share/twitter.png);
+}
+#tweetbtn-settings {
+    margin-top: 10px;
 }
 `
 	$('head').append(`<style>${css}</style>`);
@@ -128,9 +121,7 @@ function drawTweetBtn() {
                         ${buttonStr}</a>`;
                         // ボタンのスタイルはBootstrapで指定
                         // hrefはURI用のエンコーダ(encodeURIComponent)を使用し、+や改行もいい感じで処理するようにした
-
-	console.log(tweetButton);
-
+	
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
 
@@ -224,19 +215,128 @@ function drawTweetBtn() {
 	}
 }
 
-function drawSettingsButton() {
+function initSettingsArea() {
 	const lsKey = 'AtCoder_Result_Tweet_Button_Settings'
-	
+	settings = getSettingsFromLS();
+	if (!settings) {
+		setDefaultSettings();
+	}
 	//他ウィンドウで設定が更新された時に設定を更新
 	window.addEventListener("storage", function (event) {
-		if (event.storageArea !== lsKey) return;
-		settings = JSON.stringify(event.newValue);
+		console.log(event);
+		if (event.key !== lsKey) return;
+		settings = JSON.parse(event.newValue);
+		console.log(settings);
+		drawTweetBtn();
+		drawSettingsArea();
 	})
+	$('#main-container').append(getSettingsDiv());
+	$('#tweetbtn-settings textarea,#tweetbtn-settings input').keyup((() => {
+		var newSettings = {};
+		newSettings = settings;
+		newSettings.dateFormat = $('#tweetbtn-settings-dateformat').val();
+		newSettings.RatingHighestString = $('#tweetbtn-settings-highestrating').val();
+		newSettings.PerformanceHighestString = $('#tweetbtn-settings-highestperformance').val();
+		var result = executeSample(newSettings);
+		$('#tweet-str-settings-formatted').val(result[1]);
+		if(result[0]) {
+			settings = newSettings;
+			setSettingsToLS();
+			drawTweetBtn();
+		}
+	}));
+	drawSettingsArea();
+	function drawSettingsArea() {
+		$('#tweetbtn-settings-dateformat').val(settings.dateFormat);
+		$('#tweetbtn-settings-format').val(settings.tweetFormat);
+		$('#tweetbtn-settings-highestperformance').val(settings.PerformanceHighestString);
+		$('#tweetbtn-settings-highestrating').val(settings.RatingHighestString);
+		$('#tweetbtn-settings-format').val(settings.tweetFormat);
+		var result = executeSample(settings);
+		$('#tweet-str-settings-formatted').val(result[1]);
+	}
+	function executeSample(settings) {
+		contestResult = {}
+		var ContestDate = moment().format(settings.dateFormat);
+		var ContestName = "AtCoder Grand Contest 999";
+		var ContestScreenName = "agc999";
+		var Rank = 100;
+		var IsRated = true;
+		var RatingIsHighest = true;
+		var RatingHighestString = settings.RatingHighestString;
+		var PerformanceIsHighest = true;
+		var PerformanceHighestString = settings.PerformanceHighestString;
+		var Performance = "3000";
+		var InnerPerformance = "3000";
+		var NewRating = "2400";
+		var OldRating = "2300";
+		var Diff = "+100";
+
+		try {
+			var tweetStr = eval(`\`${settings.tweetFormat}\``);
+			return [true,tweetStr];
+		}
+		catch (e){
+			return [false,e.message];
+		}
+	}
 	function getSettingsFromLS() {
 		settings = JSON.parse(localStorage.getItem(lsKey));
 	}
 	function setSettingsToLS() {
 		localStorage.setItem(lsKey, JSON.stringify(settings));
+	}
+	function setDefaultSettings() {
+		settings = {};
+		settings.dateFormat = 'Y/M/D'
+		settings.tweetFormat =
+`\${ContestDate} \${ContestName}
+Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
+Perf: \${Performance}\${PerformanceHighestString}\${(InnerPerformance !== Performance) ? \`(inner:\${InnerPerformance})\` : ''}
+Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
+		settings.RatingHighestString = ', highest!';
+		settings.PerformanceHighestString = '(highest!)';
+		setSettingsToLS();
+	}
+	function getSettingsDiv() {
+		var dom = 
+`<div class="panel panel-default" id="tweetbtn-settings">
+	<div class="panel-heading"><span class="glyphicon glyphicon-cog"></span>設定</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-sm-4">
+				<label>フォーマット設定</label>
+				<div class="form-group row">
+					<label for="tweetbtn-settings-dateformat" class="col-sm-6 col-form-label" align="right">日付フォーマット</label>
+					<div class="col-sm-6">
+						<input class="form-control" id="tweetbtn-settings-dateformat">
+					</div>
+				</div>
+				<div class="form-group row">
+					<label for="tweetbtn-settings-highestrating" class="col-sm-6 col-form-label" align="right">Hightst(Rating)</label>
+					<div class="col-sm-6">
+						<input class="form-control" id="tweetbtn-settings-highestrating">
+					</div>
+				</div>
+				<div class="form-group row">
+					<label for="tweetbtn-settings-highestperformance" class="col-sm-6 col-form-label" align="right">Hightst(Performance)</label>
+					<div class="col-sm-6">
+						<input class="form-control" id="tweetbtn-settings-highestperformance">
+					</div>
+				</div>
+			</div>
+			<div class="form-group col-sm-4">
+			  <label for="settings-tweet-str">ツイート文字列:</label>
+			  <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
+			</div>
+			<div class="form-group col-sm-4">
+			  <label for="settings-tweet-str-formatted">プレビュー:</label>
+			  <textarea class="form-control" rows="6" id="tweet-str-settings-formatted" disabled></textarea>
+			</div>
+		</div>
+	</div>
+</div>`
+		return dom;
 	}
 }
 
