@@ -217,7 +217,7 @@ function drawTweetBtn() {
 
 function initSettingsArea() {
     const lsKey = 'AtCoder_Result_Tweet_Button_Settings'
-    settings = getSettingsFromLS();
+    getSettingsFromLS();
     if (!settings) {
         setDefaultSettings();
     }
@@ -234,7 +234,7 @@ function initSettingsArea() {
     $('#tweetbtn-settings textarea,#tweetbtn-settings input').keyup((() => {
         var newSettings = {};
         newSettings = settings;
-		newSettings.tweetFormat = $('#tweetbtn-settings-format').val();
+        newSettings.tweetFormat = $('#tweetbtn-settings-format').val();
         newSettings.dateFormat = $('#tweetbtn-settings-dateformat').val();
         newSettings.RatingHighestString = $('#tweetbtn-settings-highestrating').val();
         newSettings.PerformanceHighestString = $('#tweetbtn-settings-highestperformance').val();
