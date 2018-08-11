@@ -238,7 +238,7 @@ function initSettingsArea() {
         newSettings.dateFormat = $('#tweetbtn-settings-dateformat').val();
         newSettings.RatingHighestString = $('#tweetbtn-settings-highestrating').val();
         newSettings.PerformanceHighestString = $('#tweetbtn-settings-highestperformance').val();
-        var result = executeSample(newSettings);
+        var result = getSampleString(newSettings);
         $('#tweet-str-settings-formatted').val(result[1]);
         if(result[0]) {
             settings = newSettings;
@@ -252,10 +252,10 @@ function initSettingsArea() {
         $('#tweetbtn-settings-dateformat').val(settings.dateFormat);
         $('#tweetbtn-settings-highestrating').val(settings.RatingHighestString);
         $('#tweetbtn-settings-highestperformance').val(settings.PerformanceHighestString);
-        var result = executeSample(settings);
+        var result = getSampleString(settings);
         $('#tweet-str-settings-formatted').val(result[1]);
     }
-    function executeSample(settings) {
+    function getSampleString(settings) {
         contestResult = {}
         var ContestDate = moment().format(settings.dateFormat);
         var ContestName = "AtCoder Grand Contest 999";
@@ -337,7 +337,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
     </div>
 </div>`
         return dom;
-    }
+	}
 }
 
 function getContestResults() {
@@ -350,4 +350,20 @@ function getContestResults() {
         url: `/users/${userScreenName}/history/json`
     });
 }
+
+function ordinalString(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
 })();
