@@ -299,6 +299,22 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
         setSettingsToLS();
     }
     function getSettingsDiv() {
+        var tooltipTitle =
+`使用可能な変数・関数
+<br>ContestDate
+<br>ContestName
+<br>ContestScreenName
+<br>Rank
+<br>ordinalString(序数表記する関数)
+<br>IsRated
+<br>Performance
+<br>InnerPerformance
+<br>PerformanceHighestString
+<br>OldRating
+<br>NewRating
+<br>Diff
+<br>RatingHighestString`
+
         var dom =
 `<div class="panel panel-default" id="tweetbtn-settings">
     <div class="panel-heading">
@@ -329,16 +345,27 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
                 </div>
             </div>
             <div class="form-group col-sm-4">
-              <label for="settings-tweet-str">ツイート文字列:</label>
+              <label for="settings-tweet-str">ツイート文字列</label>
+              <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tooltipTitle}" data-container="body" data-html="true"></span>
               <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
             </div>
             <div class="form-group col-sm-4">
-              <label for="settings-tweet-str-formatted">プレビュー:</label>
+              <label for="settings-tweet-str-formatted">プレビュー</label>
               <textarea class="form-control" rows="6" id="tweet-str-settings-formatted" disabled></textarea>
             </div>
         </div>
     </div>
-</div>`
+</div>
+<script type="test/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+<style type="test/css">
+    .tooltip-inner{
+        max-width: 200px;
+    }
+</style>`
         return dom;
 	}
 }
