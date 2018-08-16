@@ -3,7 +3,7 @@
 // @namespace    https://greasyfork.org/ja/scripts/370227
 // @version      1.1.5
 // @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します
-// @author       miozune
+// @author       miozune, keymoon
 // @license      MIT
 // @supportURL   https://github.com/miozune/AtCoder_Result_Tweet_Button
 // @match        https://beta.atcoder.jp/users/*
@@ -101,14 +101,14 @@ function drawTweetBtn() {
             if (!contestResult) return;
             var tweetStr = getTweetStr(contestResult);
             return (
-`<a href="https://twitter.com/intent/tweet?text=${tweetStr}" 
+`<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
     class="result-tweet-btn-inline" rel="nofollow"
     onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
     data-toggle="tooltip"
     data-original-title="この回の結果をツイート"></a>`);
         }
     }
-    
+
     var tweetStr = contestResults.length === 0 ? `@chokudai AtCoder初参加します！` :  getTweetStr(contestResults[contestResults.length - 1]);
 
     var buttonStr = getButtonStr();
@@ -121,12 +121,12 @@ function drawTweetBtn() {
                         ${buttonStr}</a>`;
                         // ボタンのスタイルはBootstrapで指定
                         // hrefはURI用のエンコーダ(encodeURIComponent)を使用し、+や改行もいい感じで処理するようにした
-    
+
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
 
-    
-    
+
+
     function getTweetStr(contestResult) {
         /*
         sample1
@@ -143,7 +143,7 @@ function drawTweetBtn() {
         Perf: 0
         Rating: 9999(+0)
         */
-            
+
         //console.log(contestResult);
 
 
@@ -165,7 +165,7 @@ function drawTweetBtn() {
         var tweetStr = eval(`\`${settings.tweetFormat}\``);
         return encodeURIComponent(tweetStr);
     }
-    
+
     function getButtonStr() {
         if (contestResults.length === 0) {
             return `ツイート`;
@@ -194,12 +194,12 @@ function drawTweetBtn() {
             return 75;
         }
     }
-    
+
     function getDate(endtimestr) {
         var time = moment(endtimestr);
         return time.format(settings.dateFormat);
     }
-    
+
     function getInsertElem() {
         if(document.URL.match('/history')) {
             // コンテスト成績表
@@ -299,10 +299,13 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
         setSettingsToLS();
     }
     function getSettingsDiv() {
-        var dom = 
+        var dom =
 `<div class="panel panel-default" id="tweetbtn-settings">
-    <div class="panel-heading"><span class="glyphicon glyphicon-cog"></span>設定</div>
-    <div class="panel-body">
+    <div class="panel-heading">
+        <a class="pull-left" data-toggle="collapse" data-target=".panel-body"><span class="glyphicon glyphicon-chevron-down"></span></a>
+        <span class="glyphicon glyphicon-cog"></span>設定
+    </div>
+    <div class="panel-body collapse">
         <div class="row">
             <div class="col-sm-4">
                 <label>フォーマット設定</label>
