@@ -12,8 +12,8 @@
 // ==/UserScript==
 (() => {
 if(!document.URL.match('//beta')) {
-    var betaLink = "beta".link(getBetaURL())
-    $("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}版ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}版でのみ動作します`));
+    var betaLink = "beta版".link(getBetaURL())
+    $("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}でのみ動作します`));
     return;
 
     function getWarning(content) {
