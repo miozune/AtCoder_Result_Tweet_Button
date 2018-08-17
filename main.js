@@ -317,8 +317,8 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 
         var dom =
 `<div class="panel panel-default" id="tweetbtn-settings">
-    <div class="panel-heading">
-        <a class="pull-left" data-toggle="collapse" data-target=".panel-body"><span class="glyphicon glyphicon-chevron-down"></span></a>
+    <div class="panel-heading" data-toggle="collapse" data-target=".panel-body">
+        <span class="glyphicon glyphicon-chevron-down"></span>
         <span class="glyphicon glyphicon-cog"></span>ê›íË
     </div>
     <div class="panel-body collapse">
