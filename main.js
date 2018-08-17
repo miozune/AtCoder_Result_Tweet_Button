@@ -318,7 +318,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
         var dom =
 `<div class="panel panel-default" id="tweetbtn-settings">
     <div class="panel-heading" data-toggle="collapse" data-target=".panel-body">
-        <span class="glyphicon glyphicon-chevron-down"></span>
+        <span id="dropdown-icon" class="glyphicon glyphicon-chevron-down"></span>
         <span class="glyphicon glyphicon-cog"></span>İ’è
     </div>
     <div class="panel-body collapse">
@@ -356,12 +356,20 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
         </div>
     </div>
 </div>
-<script type="test/javascript">
+<script type="text/javascript">
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
+        $('.panel-heading').click(() => {
+            // ‚±‚Ì’iŠK‚Å‘®«‚Í•Ï‰»‚µ‚Ä‚¢‚È‚¢
+            if ($('.panel-body').attr('aria-expanded') === 'true') {
+                $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-down');
+            } else {
+                $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-up');
+            }
+        });
     });
 </script>
-<style type="test/css">
+<style type="text/css">
     .tooltip-inner{
         max-width: 200px;
     }
