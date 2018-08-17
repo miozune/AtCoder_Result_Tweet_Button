@@ -62,7 +62,7 @@ function appendStyles() {
 }
 
 function shapeData(data){
-    //データを整形し、ContestScreenName/Diff/IsHighest(Rate|Perf)をいい感じにする
+    //データを整形し、ContestScreenName/Diff/IsHighest(Perf|Rate)をいい感じにする
     var maxPerf = -1;
     var maxRate = -1;
     for (var i = 0; i < data.length; i++) {
@@ -152,12 +152,12 @@ function drawTweetBtn() {
         var ContestScreenName = contestResult.ContestScreenName;
         var Rank = contestResult.Place;
         var IsRated = contestResult.IsRated;
-        var RatingIsHighest = contestResult.RatingIsHighest;
-        var RatingHighestString = RatingIsHighest ? settings.RatingHighestString : '';
         var PerformanceIsHighest = contestResult.PerformanceIsHighest;
         var PerformanceHighestString = PerformanceIsHighest ? settings.PerformanceHighestString : '';
         var Performance = contestResult.Performance;
         var InnerPerformance = contestResult.InnerPerformance;
+        var RatingIsHighest = contestResult.RatingIsHighest;
+        var RatingHighestString = RatingIsHighest ? settings.RatingHighestString : '';
         var NewRating = contestResult.NewRating;
         var OldRating = contestResult.OldRating;
         var Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`; //+ or -;
@@ -236,8 +236,8 @@ function initSettingsArea() {
         newSettings = settings;
         newSettings.tweetFormat = $('#tweetbtn-settings-format').val();
         newSettings.dateFormat = $('#tweetbtn-settings-dateformat').val();
-        newSettings.RatingHighestString = $('#tweetbtn-settings-highestrating').val();
         newSettings.PerformanceHighestString = $('#tweetbtn-settings-highestperformance').val();
+        newSettings.RatingHighestString = $('#tweetbtn-settings-highestrating').val();
         var result = getSampleString(newSettings);
         $('#tweet-str-settings-formatted').val(result[1]);
         if(result[0]) {
@@ -250,8 +250,8 @@ function initSettingsArea() {
     function drawSettingsArea() {
         $('#tweetbtn-settings-format').val(settings.tweetFormat);
         $('#tweetbtn-settings-dateformat').val(settings.dateFormat);
-        $('#tweetbtn-settings-highestrating').val(settings.RatingHighestString);
         $('#tweetbtn-settings-highestperformance').val(settings.PerformanceHighestString);
+        $('#tweetbtn-settings-highestrating').val(settings.RatingHighestString);
         var result = getSampleString(settings);
         $('#tweet-str-settings-formatted').val(result[1]);
     }
@@ -262,12 +262,12 @@ function initSettingsArea() {
         var ContestScreenName = "agc999";
         var Rank = 100;
         var IsRated = true;
-        var RatingIsHighest = true;
-        var RatingHighestString = settings.RatingHighestString;
         var PerformanceIsHighest = true;
         var PerformanceHighestString = settings.PerformanceHighestString;
         var Performance = "3000";
         var InnerPerformance = "3000";
+        var RatingIsHighest = true;
+        var RatingHighestString = settings.RatingHighestString;
         var NewRating = "2400";
         var OldRating = "2300";
         var Diff = "+100";
@@ -294,13 +294,13 @@ function initSettingsArea() {
 Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
 Perf: \${Performance}\${PerformanceHighestString}\${(InnerPerformance !== Performance) ? \`(inner:\${InnerPerformance})\` : ''}
 Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
-        settings.RatingHighestString = ', highest!';
         settings.PerformanceHighestString = '(highest!)';
+        settings.RatingHighestString = ', highest!';
         setSettingsToLS();
     }
     function getSettingsDiv() {
         var tooltipTitle =
-`使用可能な変数・関数
+`<strong>使用可能な変数・関数</strong>
 <br>ContestDate
 <br>ContestName
 <br>ContestScreenName
@@ -332,15 +332,15 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="tweetbtn-settings-highestrating" class="col-sm-6 col-form-label" align="right">Hightst(Rating)</label>
+                    <label for="tweetbtn-settings-highestperformance" class="col-sm-6 col-form-label" align="right">Highest(Performance)</label>
                     <div class="col-sm-6">
-                        <input class="form-control" id="tweetbtn-settings-highestrating">
+                        <input class="form-control" id="tweetbtn-settings-highestperformance">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="tweetbtn-settings-highestperformance" class="col-sm-6 col-form-label" align="right">Hightst(Performance)</label>
+                    <label for="tweetbtn-settings-highestrating" class="col-sm-6 col-form-label" align="right">Highest(Rating)</label>
                     <div class="col-sm-6">
-                        <input class="form-control" id="tweetbtn-settings-highestperformance">
+                        <input class="form-control" id="tweetbtn-settings-highestrating">
                     </div>
                 </div>
             </div>
