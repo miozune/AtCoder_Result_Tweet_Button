@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         AtCoder_Result_Tweet_Button
+// @name         develop
 // @namespace    https://greasyfork.org/ja/scripts/370227
-// @version      1.2.0
+// @version      1.2.1
 // @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します
 // @author       miozune, keymoon
 // @license      MIT
@@ -150,6 +150,7 @@ function drawTweetBtn() {
         var ContestDate = getDate(contestResult.EndTime);
         var ContestName = contestResult.ContestName;
         var ContestScreenName = contestResult.ContestScreenName;
+        var ContestScreenName_Upper = ContestScreenName.toUpperCase();
         var Rank = contestResult.Place;
         var IsRated = contestResult.IsRated;
         var PerformanceIsHighest = contestResult.PerformanceIsHighest;
@@ -260,6 +261,7 @@ function initSettingsArea() {
         var ContestDate = moment().format(settings.dateFormat);
         var ContestName = "AtCoder Grand Contest 999";
         var ContestScreenName = "agc999";
+        var ContestScreenName_Upper = "AGC999";
         var Rank = 100;
         var IsRated = true;
         var PerformanceIsHighest = true;
@@ -304,6 +306,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 <br>ContestDate
 <br>ContestName
 <br>ContestScreenName (短縮表記)
+<br>ContestScreenName_Upper
 <br>Rank
 <br>ordinalString (序数表記する関数)
 <br>IsRated (bool)
