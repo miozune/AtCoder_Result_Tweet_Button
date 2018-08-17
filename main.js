@@ -303,16 +303,16 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 `<strong>使用可能な変数・関数</strong>
 <br>ContestDate
 <br>ContestName
-<br>ContestScreenName
+<br>ContestScreenName (短縮表記)
 <br>Rank
-<br>ordinalString(序数表記する関数)
-<br>IsRated
+<br>ordinalString (序数表記する関数)
+<br>IsRated (bool)
 <br>Performance
 <br>InnerPerformance
 <br>PerformanceHighestString
 <br>OldRating
 <br>NewRating
-<br>Diff
+<br>Diff (符号付き)
 <br>RatingHighestString`
 
         var dom =
