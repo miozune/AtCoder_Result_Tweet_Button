@@ -178,24 +178,6 @@ function drawTweetBtn() {
         }
     }
 
-    function getButtonWidth() {
-        if (contestResults.length === 0) {
-            return 130;
-        } else {
-            var latestContestResult = contestResults[contestResults.length - 1];
-            var contestName = latestContestResult.ContestName;
-            return contestName.length * 7 + 25;
-        }
-    }
-
-    function getButtonHeight() {
-        if (contestResults.length === 0) {
-            return 35;
-        } else {
-            return 75;
-        }
-    }
-
     function getDate(endtimestr) {
         var time = moment(endtimestr);
         return time.format(settings.dateFormat);
