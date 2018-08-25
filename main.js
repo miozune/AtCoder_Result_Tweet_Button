@@ -1,8 +1,8 @@
-// ==UserScript==
+ï»¿// ==UserScript==
 // @name         AtCoder_Result_Tweet_Button
 // @namespace    https://greasyfork.org/ja/scripts/370227
 // @version      1.2.1
-// @description  AtCoder‚Ìƒ†[ƒU[ƒy[ƒW‚ÉÅŒã‚ÉQ‰Á‚µ‚½ƒRƒ“ƒeƒXƒg‚Ìî•ñ‚ğƒcƒC[ƒg‚·‚éƒ{ƒ^ƒ“‚ğ’Ç‰Á‚µ‚Ü‚·
+// @description  AtCoderã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒšãƒ¼ã‚¸ã«æœ€å¾Œã«å‚åŠ ã—ãŸã‚³ãƒ³ãƒ†ã‚¹ãƒˆã®æƒ…å ±ã‚’ãƒ„ã‚¤ãƒ¼ãƒˆã™ã‚‹ãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã—ã¾ã™
 // @author       miozune, keymoon
 // @license      MIT
 // @supportURL   https://github.com/miozune/AtCoder_Result_Tweet_Button
@@ -12,12 +12,12 @@
 // ==/UserScript==
 (() => {
 if(!document.URL.match('//beta')) {
-    var betaLink = "beta”Å".link(getBetaURL())
-    $("#main-div > .container").prepend(getWarning(`‚±‚ÌƒTƒCƒg‚Í${betaLink}‚Å‚Í‚ ‚è‚Ü‚¹‚ñBAtCoder_Result_Tweet_Button‚Í${betaLink}‚Å‚Ì‚İ“®ì‚µ‚Ü‚·`));
+    var betaLink = "betaç‰ˆ".link(getBetaURL())
+    $("#main-div > .container").prepend(getWarning(`ã“ã®ã‚µã‚¤ãƒˆã¯${betaLink}ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚AtCoder_Result_Tweet_Buttonã¯${betaLink}ã§ã®ã¿å‹•ä½œã—ã¾ã™`));
     return;
 
     function getWarning(content) {
-        return `<div class="alert alert-warning" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="•Â‚¶‚é"><span aria-hidden="true">~</span></button>${content}</div>`;
+        return `<div class="alert alert-warning" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="é–‰ã˜ã‚‹"><span aria-hidden="true">Ã—</span></button>${content}</div>`;
     }
 
     function getBetaURL() {
@@ -25,7 +25,7 @@ if(!document.URL.match('//beta')) {
     }
 }
 if (!document.URL.match(`/${userScreenName}`)) {
-     // ©•ª‚Ìƒ†[ƒU[ƒy[ƒW‚Å‚È‚¯‚ê‚Îƒ{ƒ^ƒ“‚ğ•\¦‚µ‚È‚¢
+     // è‡ªåˆ†ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒšãƒ¼ã‚¸ã§ãªã‘ã‚Œã°ãƒœã‚¿ãƒ³ã‚’è¡¨ç¤ºã—ãªã„
     return;
 }
 
@@ -35,12 +35,12 @@ var contestResults;
 appendStyles();
 initSettingsArea();
 
-//$.ajax‚©‚çƒf[ƒ^æ“¾A‚±‚ê‚ªI‚í‚Á‚Ä‚©‚çƒƒCƒ“ˆ—‚ÉˆÚ‚é
+//$.ajaxã‹ã‚‰ãƒ‡ãƒ¼ã‚¿å–å¾—ã€ã“ã‚ŒãŒçµ‚ã‚ã£ã¦ã‹ã‚‰ãƒ¡ã‚¤ãƒ³å‡¦ç†ã«ç§»ã‚‹
 getContestResults()
     .then(function(data) {
         contestResults = shapeData(data);
         drawTweetBtn();
-        console.log('AtCoder_Result_Tweet_Button‚Í³í‚ÉÀs‚³‚ê‚Ü‚µ‚½')
+        console.log('AtCoder_Result_Tweet_Buttonã¯æ­£å¸¸ã«å®Ÿè¡Œã•ã‚Œã¾ã—ãŸ')
     })
 
 function appendStyles() {
@@ -62,7 +62,7 @@ function appendStyles() {
 }
 
 function shapeData(data){
-    //ƒf[ƒ^‚ğ®Œ`‚µAContestScreenName/Diff/IsHighest(Perf|Rate)‚ğ‚¢‚¢Š´‚¶‚É‚·‚é
+    //ãƒ‡ãƒ¼ã‚¿ã‚’æ•´å½¢ã—ã€ContestScreenName/Diff/IsHighest(Perf|Rate)ã‚’ã„ã„æ„Ÿã˜ã«ã™ã‚‹
     var maxPerf = -1;
     var maxRate = -1;
     for (var i = 0; i < data.length; i++) {
@@ -82,7 +82,7 @@ function drawTweetBtn() {
 
     const buttonID = 'result-tweet-btn';
 
-    //‘}“ü‘O‚ÉŠù‘¶—v‘f‚ğíœ
+    //æŒ¿å…¥å‰ã«æ—¢å­˜è¦ç´ ã‚’å‰Šé™¤
     removeTweetBtn();
 
     if(document.URL.match('/history$')) {
@@ -91,9 +91,9 @@ function drawTweetBtn() {
             var tweetButton = getInlineTweetButton(contestName);
             $(elem).append(tweetButton);
         })
-        // Tooltip‚Ì—LŒø‰»
+        // Tooltipã®æœ‰åŠ¹åŒ–
         $('[data-toggle="tooltip"]').tooltip();
-        // ˆÊ’u’²ß
+        // ä½ç½®èª¿ç¯€
         document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
 
         function getInlineTweetButton(contestName) {
@@ -105,11 +105,11 @@ function drawTweetBtn() {
     class="result-tweet-btn-inline" rel="nofollow"
     onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
     data-toggle="tooltip"
-    data-original-title="‚±‚Ì‰ñ‚ÌŒ‹‰Ê‚ğƒcƒC[ƒg"></a>`);
+    data-original-title="ã“ã®å›ã®çµæœã‚’ãƒ„ã‚¤ãƒ¼ãƒˆ"></a>`);
         }
     }
 
-    var tweetStr = contestResults.length === 0 ? `@chokudai AtCoder‰Q‰Á‚µ‚Ü‚·I` :  getTweetStr(contestResults[contestResults.length - 1]);
+    var tweetStr = contestResults.length === 0 ? `@chokudai AtCoderåˆå‚åŠ ã—ã¾ã™ï¼` :  getTweetStr(contestResults[contestResults.length - 1]);
 
     var buttonStr = getButtonStr();
 
@@ -119,8 +119,8 @@ function drawTweetBtn() {
                             onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
                             id="${buttonID}">
                         ${buttonStr}</a>`;
-                        // ƒ{ƒ^ƒ“‚ÌƒXƒ^ƒCƒ‹‚ÍBootstrap‚Åw’è
-                        // href‚ÍURI—p‚ÌƒGƒ“ƒR[ƒ_(encodeURIComponent)‚ğg—p‚µA+‚â‰üs‚à‚¢‚¢Š´‚¶‚Åˆ—‚·‚é‚æ‚¤‚É‚µ‚½
+                        // ãƒœã‚¿ãƒ³ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯Bootstrapã§æŒ‡å®š
+                        // hrefã¯URIç”¨ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€(encodeURIComponent)ã‚’ä½¿ç”¨ã—ã€+ã‚„æ”¹è¡Œã‚‚ã„ã„æ„Ÿã˜ã§å‡¦ç†ã™ã‚‹ã‚ˆã†ã«ã—ãŸ
 
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
@@ -169,12 +169,12 @@ function drawTweetBtn() {
 
     function getButtonStr() {
         if (contestResults.length === 0) {
-            return `ƒcƒC[ƒg`;
+            return `ãƒ„ã‚¤ãƒ¼ãƒˆ`;
         } else {
             var latestContestResult = contestResults[contestResults.length - 1];
             var contestDate = getDate(latestContestResult.EndTime);
             var contestName = latestContestResult.ContestName;
-            return `${contestDate}<br>${contestName}<br>‚ÌŒ‹‰Ê‚ğƒcƒC[ƒg‚·‚é`;
+            return `${contestDate}<br>${contestName}<br>ã®çµæœã‚’ãƒ„ã‚¤ãƒ¼ãƒˆã™ã‚‹`;
         }
     }
 
@@ -203,10 +203,10 @@ function drawTweetBtn() {
 
     function getInsertElem() {
         if(document.URL.match('/history')) {
-            // ƒRƒ“ƒeƒXƒg¬Ñ•\
+            // ã‚³ãƒ³ãƒ†ã‚¹ãƒˆæˆç¸¾è¡¨
             return document.getElementById('history_wrapper');
         } else {
-            // ƒvƒƒtƒB[ƒ‹
+            // ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«
             return document.getElementsByTagName("p")[1];
         }
     }
@@ -222,7 +222,7 @@ function initSettingsArea() {
     if (!settings) {
         setDefaultSettings();
     }
-    //‘¼ƒEƒBƒ“ƒhƒE‚Åİ’è‚ªXV‚³‚ê‚½‚Éİ’è‚ğXV
+    //ä»–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§è¨­å®šãŒæ›´æ–°ã•ã‚ŒãŸæ™‚ã«è¨­å®šã‚’æ›´æ–°
     window.addEventListener("storage", function (event) {
         console.log(event);
         if (event.key !== lsKey) return;
@@ -302,34 +302,34 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
     }
     function getSettingsDiv() {
         var tooltipTitle =
-`<strong>g—p‰Â”\‚È•Ï”EŠÖ”</strong>
+`<strong>ä½¿ç”¨å¯èƒ½ãªå¤‰æ•°ãƒ»é–¢æ•°</strong>
 <br>ContestDate
 <br>ContestName
-<br>ContestScreenName (’Zk•\‹L)
+<br>ContestScreenName (çŸ­ç¸®è¡¨è¨˜)
 <br>ContestScreenName_Upper
 <br>Rank
-<br>ordinalString (˜”•\‹L‚·‚éŠÖ”)
+<br>ordinalString (åºæ•°è¡¨è¨˜ã™ã‚‹é–¢æ•°)
 <br>IsRated (bool)
 <br>Performance
 <br>InnerPerformance
 <br>PerformanceHighestString
 <br>OldRating
 <br>NewRating
-<br>Diff (•„†•t‚«)
+<br>Diff (ç¬¦å·ä»˜ã)
 <br>RatingHighestString`
 
         var dom =
 `<div class="panel panel-default" id="tweetbtn-settings">
     <div class="panel-heading" data-toggle="collapse" data-target=".panel-body">
         <span id="dropdown-icon" class="glyphicon glyphicon-chevron-down"></span>
-        <span class="glyphicon glyphicon-cog"></span>İ’è
+        <span class="glyphicon glyphicon-cog"></span>è¨­å®š
     </div>
     <div class="panel-body collapse">
         <div class="row">
             <div class="col-sm-4">
-                <label>ƒtƒH[ƒ}ƒbƒgİ’è</label>
+                <label>ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆè¨­å®š</label>
                 <div class="form-group row">
-                    <label for="tweetbtn-settings-dateformat" class="col-sm-6 col-form-label" align="right">“ú•tƒtƒH[ƒ}ƒbƒg</label>
+                    <label for="tweetbtn-settings-dateformat" class="col-sm-6 col-form-label" align="right">æ—¥ä»˜ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ</label>
                     <div class="col-sm-6">
                         <input class="form-control" id="tweetbtn-settings-dateformat">
                     </div>
@@ -348,12 +348,12 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
                 </div>
             </div>
             <div class="form-group col-sm-4">
-              <label for="settings-tweet-str">ƒcƒC[ƒg•¶š—ñ</label>
+              <label for="settings-tweet-str">ãƒ„ã‚¤ãƒ¼ãƒˆæ–‡å­—åˆ—</label>
               <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tooltipTitle}" data-container="body" data-html="true"></span>
               <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
             </div>
             <div class="form-group col-sm-4">
-              <label for="settings-tweet-str-formatted">ƒvƒŒƒrƒ…[</label>
+              <label for="settings-tweet-str-formatted">ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼</label>
               <textarea class="form-control" rows="6" id="tweet-str-settings-formatted" disabled></textarea>
             </div>
         </div>
@@ -363,7 +363,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
         $('.panel-heading').click(() => {
-            // ‚±‚Ì’iŠK‚Å‘®«‚Í•Ï‰»‚µ‚Ä‚¢‚È‚¢
+            // ã“ã®æ®µéšã§å±æ€§ã¯å¤‰åŒ–ã—ã¦ã„ãªã„
             if ($('.panel-body').attr('aria-expanded') === 'true') {
                 $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-down');
             } else {
@@ -373,8 +373,11 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
     });
 </script>
 <style type="text/css">
-    .tooltip-inner{
+    .tooltip-inner {
         max-width: 200px;
+    }
+    .panel-heading {
+        cursor: pointer;
     }
 </style>`
         return dom;
@@ -382,9 +385,9 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 }
 
 function getContestResults() {
-    // JQuery‚ÌAjaxŠÖ”; Get‚Åurl‚©‚çƒf[ƒ^‚ğæ“¾‚µAJSON‚Æ‚µ‚Ä‰ğß‚·‚é
-    // userScreenName‚Íbeta.atcoder.jp‚ÌƒOƒ[ƒoƒ‹•Ï”
-    // atcoder.jp(”ñbeta”ÅƒTƒCƒg)‚ÍuserScreenName‚¨‚æ‚Ñ/history/json‚ğƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢
+    // JQueryã®Ajaxé–¢æ•°; Getã§urlã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã€JSONã¨ã—ã¦è§£é‡ˆã™ã‚‹
+    // userScreenNameã¯beta.atcoder.jpã®ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+    // atcoder.jp(ébetaç‰ˆã‚µã‚¤ãƒˆ)ã¯userScreenNameãŠã‚ˆã³/history/jsonã‚’ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„
     return $.ajax({
         type: 'GET',
         dataType: 'json',
