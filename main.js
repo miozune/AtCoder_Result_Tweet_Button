@@ -284,7 +284,10 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
         setSettingsToLS();
     }
     function getSettingsDiv() {
-        var tooltipTitle =
+        var dateFormatHint =
+`moment.jsの形式で指定`
+
+        var tweetFormatHint =
 `<strong>使用可能な変数・関数</strong>
 <br>ContestDate
 <br>ContestName
@@ -312,7 +315,10 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
             <div class="col-sm-4">
                 <label>フォーマット設定</label>
                 <div class="form-group row">
-                    <label for="tweetbtn-settings-dateformat" class="col-sm-6 col-form-label" align="right">日付フォーマット</label>
+                    <label for="tweetbtn-settings-dateformat" class="col-sm-6 col-form-label" align="right">
+                        <span>日付フォーマット</span>
+                        <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${dateFormatHint}" data-container="body" data-html="true"></span>
+                    </label>
                     <div class="col-sm-6">
                         <input class="form-control" id="tweetbtn-settings-dateformat">
                     </div>
@@ -332,7 +338,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
             </div>
             <div class="form-group col-sm-4">
               <label for="settings-tweet-str">ツイート文字列</label>
-              <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tooltipTitle}" data-container="body" data-html="true"></span>
+              <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tweetFormatHint}" data-container="body" data-html="true"></span>
               <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
             </div>
             <div class="form-group col-sm-4">
