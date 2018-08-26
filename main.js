@@ -12,7 +12,7 @@
 // ==/UserScript==
 (() => {
 if(!document.URL.match('//beta')) {
-    var betaLink = "beta版".link(getBetaURL())
+    var betaLink = "beta版".link(getBetaURL());
     $("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}でのみ動作します`));
     return;
 
@@ -21,11 +21,11 @@ if(!document.URL.match('//beta')) {
     }
 
     function getBetaURL() {
-        return `https://beta.atcoder.jp${document.location.pathname.replace('user', 'users')}`
+        return `https://beta.atcoder.jp${document.location.pathname.replace('user', 'users')}`;
     }
 }
 if (!isMyPage()) {
-     // 自分のユーザーページでなければボタンを表示しない
+        // 自分のユーザーページでなければボタンを表示しない
     return;
 }
 
@@ -39,9 +39,9 @@ initSettingsArea();
 getContestResults()
     .then(function(data) {
         contestResults = shapeData(data);
+        // console.log(contestResults);
         drawTweetBtn();
-        console.log('AtCoder_Result_Tweet_Buttonは正常に実行されました')
-    })
+    });
 
 function appendStyles() {
     const css =
@@ -57,7 +57,7 @@ function appendStyles() {
 #tweetbtn-settings {
     margin-top: 10px;
 }
-`
+`;
     $('head').append(`<style>${css}</style>`);
 }
 
@@ -90,7 +90,7 @@ function drawTweetBtn() {
             var contestName = $('a', elem)[0].textContent;
             var tweetButton = getInlineTweetButton(contestName);
             $(elem).append(tweetButton);
-        })
+        });
         // 位置調節
         document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
 
@@ -200,21 +200,25 @@ function drawTweetBtn() {
 }
 
 function initSettingsArea() {
-    const lsKey = 'AtCoder_Result_Tweet_Button_Settings'
+    const lsKey = 'AtCoder_Result_Tweet_Button_Settings';
     getSettingsFromLS();
+
     if (!settings) {
         setDefaultSettings();
     }
+
     //他ウィンドウで設定が更新された時に設定を更新
     window.addEventListener("storage", function (event) {
-        console.log(event);
+        // console.log(event);
         if (event.key !== lsKey) return;
         settings = JSON.parse(event.newValue);
-        console.log(settings);
+        // console.log(settings);
         drawTweetBtn();
         drawSettingsArea();
-    })
+    });
+
     $('#main-container').append(getSettingsDiv());
+
     $('#tweetbtn-settings textarea,#tweetbtn-settings input').keyup((() => {
         var newSettings = {};
         newSettings = settings;
@@ -230,7 +234,9 @@ function initSettingsArea() {
             drawTweetBtn();
         }
     }));
+
     drawSettingsArea();
+
     function drawSettingsArea() {
         $('#tweetbtn-settings-format').val(settings.tweetFormat);
         $('#tweetbtn-settings-dateformat').val(settings.dateFormat);
@@ -239,8 +245,9 @@ function initSettingsArea() {
         var result = getSampleString(settings);
         $('#tweet-str-settings-formatted').val(result[1]);
     }
+
     function getSampleString(settings) {
-        contestResult = {}
+        contestResult = {};
         var ContestDate = moment().format(settings.dateFormat);
         var ContestName = "AtCoder Grand Contest 999";
         var ContestScreenName = "agc999";
@@ -265,15 +272,18 @@ function initSettingsArea() {
             return [false,e.message];
         }
     }
+
     function getSettingsFromLS() {
         settings = JSON.parse(localStorage.getItem(lsKey));
     }
+
     function setSettingsToLS() {
         localStorage.setItem(lsKey, JSON.stringify(settings));
     }
+
     function setDefaultSettings() {
         settings = {};
-        settings.dateFormat = 'Y/M/D'
+        settings.dateFormat = 'Y/M/D';
         settings.tweetFormat =
 `\${ContestDate} \${ContestName}
 Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
@@ -283,9 +293,9 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
         settings.RatingHighestString = ', highest!';
         setSettingsToLS();
     }
+
     function getSettingsDiv() {
-        var dateFormatHint =
-`moment.jsの形式で指定`
+        var dateFormatHint = `moment.jsの形式で指定`;
 
         var tweetFormatHint =
 `<strong>使用可能な変数・関数</strong>
@@ -302,7 +312,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 <br>OldRating
 <br>NewRating
 <br>Diff (符号付き)
-<br>RatingHighestString`
+<br>RatingHighestString`;
 
         var dom =
 `<div class="panel panel-default" id="tweetbtn-settings">
@@ -337,13 +347,13 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
                 </div>
             </div>
             <div class="form-group col-sm-4">
-              <label for="settings-tweet-str">ツイート文字列</label>
-              <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tweetFormatHint}" data-container="body" data-html="true"></span>
-              <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
+                <label for="settings-tweet-str">ツイート文字列</label>
+                <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tweetFormatHint}" data-container="body" data-html="true"></span>
+                <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
             </div>
             <div class="form-group col-sm-4">
-              <label for="settings-tweet-str-formatted">プレビュー</label>
-              <textarea class="form-control" rows="6" id="tweet-str-settings-formatted" disabled></textarea>
+                <label for="settings-tweet-str-formatted">プレビュー</label>
+                <textarea class="form-control" rows="6" id="tweet-str-settings-formatted" disabled></textarea>
             </div>
         </div>
     </div>
@@ -367,9 +377,10 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
     .panel-heading {
         cursor: pointer;
     }
-</style>`
+</style>`;
+
         return dom;
-	}
+    }
 }
 
 function getContestResults() {
@@ -390,21 +401,15 @@ function isHistoryPage() {
 
 function isMyPage() {
     // history*さんを回避
-    return (isHistoryPage() && document.URL.match(`/${userScreenName}/history`)) || (!isHistoryPage() && document.URL.match(`/${userScreenName}`))
+    return (isHistoryPage() && document.URL.match(`/${userScreenName}/history`)) || (!isHistoryPage() && document.URL.match(`/${userScreenName}`));
 }
 
 function ordinalString(i) {
-    var j = i % 10,
-        k = i % 100;
-    if (j == 1 && k != 11) {
-        return i + "st";
-    }
-    if (j == 2 && k != 12) {
-        return i + "nd";
-    }
-    if (j == 3 && k != 13) {
-        return i + "rd";
-    }
+    var j = i % 10;
+    var k = i % 100;
+    if (j == 1 && k != 11) return i + "st";
+    if (j == 2 && k != 12) return i + "nd";
+    if (j == 3 && k != 13) return i + "rd";
     return i + "th";
 }
 
