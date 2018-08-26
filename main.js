@@ -24,7 +24,7 @@ if(!document.URL.match('//beta')) {
         return `https://beta.atcoder.jp${document.location.pathname.replace('user', 'users')}`
     }
 }
-if (!document.URL.match(`/${userScreenName}`)) {
+if (!isMyPage()) {
      // 自分のユーザーページでなければボタンを表示しない
     return;
 }
@@ -85,7 +85,7 @@ function drawTweetBtn() {
     //挿入前に既存要素を削除
     removeTweetBtn();
 
-    if(document.URL.match('/history$')) {
+    if(isHistoryPage()) {
         $('#history > tbody .text-left').each((i,elem) => {
             var contestName = $('a', elem)[0].textContent;
             var tweetButton = getInlineTweetButton(contestName);
@@ -185,7 +185,7 @@ function drawTweetBtn() {
     }
 
     function getInsertElem() {
-        if(document.URL.match('/history')) {
+        if(isHistoryPage()) {
             // コンテスト成績表
             return document.getElementById('history_wrapper');
         } else {
@@ -375,6 +375,16 @@ function getContestResults() {
         dataType: 'json',
         url: `/users/${userScreenName}/history/json`
     });
+}
+
+function isHistoryPage() {
+    var parser = new URL(document.URL);
+    return parser.pathname.split('/').length === 4;
+}
+
+function isMyPage() {
+    // history*さんを回避
+    return (isHistoryPage() && document.URL.match(`/${userScreenName}/history`)) || (!isHistoryPage() && document.URL.match(`/${userScreenName}`))
 }
 
 function ordinalString(i) {
