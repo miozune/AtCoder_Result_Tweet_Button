@@ -91,8 +91,6 @@ function drawTweetBtn() {
             var tweetButton = getInlineTweetButton(contestName);
             $(elem).append(tweetButton);
         })
-        // Tooltipの有効化
-        $('[data-toggle="tooltip"]').tooltip();
         // 位置調節
         document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
 
@@ -124,6 +122,9 @@ function drawTweetBtn() {
 
     var insertElem = getInsertElem();
     insertElem.insertAdjacentHTML('beforebegin',tweetButton);
+
+    // Tooltipの有効化
+    $('[data-toggle="tooltip"]').tooltip();
 
 
 
@@ -343,7 +344,6 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 </div>
 <script type="text/javascript">
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
         $('.panel-heading').click(() => {
             // この段階で属性は変化していない
             if ($('.panel-body').attr('aria-expanded') === 'true') {
