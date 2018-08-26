@@ -99,7 +99,7 @@ function drawTweetBtn() {
             if (!contestResult) return;
             var tweetStr = getTweetStr(contestResult);
             return (
-`<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
+`<a href="https://twitter.com/share?text=${tweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
     class="result-tweet-btn-inline" rel="nofollow"
     onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
     data-toggle="tooltip"
@@ -111,7 +111,7 @@ function drawTweetBtn() {
 
     var buttonStr = getButtonStr();
 
-    var tweetButton = `<a href="https://twitter.com/intent/tweet?text=${tweetStr}"
+    var tweetButton = `<a href="https://twitter.com/share?text=${tweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
                             class="btn btn-info pull-right"
                             rel="nofollow"
                             onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
@@ -164,7 +164,7 @@ function drawTweetBtn() {
         var OldRating = contestResult.OldRating;
         var Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`; //+ or -;
 
-        var tweetStr = eval(`\`${settings.tweetFormat}\``);
+        var tweetStr = eval(`\`${settings.tweetFormat}\``) + '\n';
         return encodeURIComponent(tweetStr);
     }
 
