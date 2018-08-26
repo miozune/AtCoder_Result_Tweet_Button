@@ -349,8 +349,10 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
                 </div>
             </div>
             <div class="form-group col-sm-4">
-                <label for="settings-tweet-str">ツイート文字列</label>
-                <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tweetFormatHint}" data-container="body" data-html="true"></span>
+                <label for="settings-tweet-str">
+                    <span>ツイート文字列</span>
+                    <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tweetFormatHint}" data-container="body" data-html="true"></span>
+                </label>
                 <textarea class="form-control" rows="6" id="tweetbtn-settings-format"></textarea>
             </div>
             <div class="form-group col-sm-4">
