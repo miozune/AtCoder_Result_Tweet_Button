@@ -47,7 +47,7 @@ if (!isMyPage()) {
 
 
 // 初期化
-var settings;
+let settings;
 
 // ・cssを適用
 // ・設定画面を初期化
@@ -97,12 +97,12 @@ function appendStyles() {
 
 // ajaxで取得したコンテストデータを整形して返す
 function shapeData(data){
-    var maxPerf = -1;
-    var maxRate = -1;
-    for (var i = 0; i < data.length; i++) {
+    let maxPerf = -1;
+    let maxRate = -1;
+    for (let i=0; i<data.length; i++) {
         data[i].PerformanceIsHighest = data[i].Performance > maxPerf;
         data[i].RatingIsHighest = data[i].NewRating > maxRate;
-        data[i].OldRating = i === 0 ? 0 : data[i - 1].NewRating;
+        data[i].OldRating = i === 0 ? 0 : data[i-1].NewRating;
         data[i].Diff = data[i].NewRating - data[i].OldRating;
         data[i].ContestScreenName = data[i].ContestScreenName.split('.')[0];
 
@@ -120,62 +120,54 @@ function drawTweetBtn() {
     // 繰り返し呼び出されるので挿入前に既存要素を削除
     removeTweetBtn();
 
-    // 「コンテスト成績表」のページならインラインのボタンを配置
+    // ブロックのボタンを描画
+    const blockTweetButton = getBlockTweetButton();
+    const blockInsertElem = getBlockInsertElem();
+    blockInsertElem.insertAdjacentHTML('beforebegin', blockTweetButton);
+
+    // 「コンテスト成績表」のページならインラインのボタンを描画
     if (isHistoryPage()) {
         $('#history > tbody .text-left').each((_, elem) => {
-            var contestName = $('a', elem)[0].textContent;
-            var inlineTweetButton = getInlineTweetButton(contestName);
+            const contestName = $('a', elem)[0].textContent;
+            const inlineTweetButton = getInlineTweetButton(contestName);
             $(elem).append(inlineTweetButton);
         });
         // 位置調節
         document.getElementsByClassName('col-sm-6')[1].classList.add('pull-right');
-
-        // コンテスト名を指定してインラインのボタン要素を取得
-        function getInlineTweetButton(contestName) {
-            const contestResult = contestResults.find(elem => elem.ContestName === contestName);
-            if (!contestResult) return;
-            const inlineTweetStr = getTweetStr(contestResult);
-            return (
-`<a href="https://twitter.com/share?text=${inlineTweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
-    class="result-tweet-btn-inline" rel="nofollow"
-    onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
-    data-toggle="tooltip"
-    data-original-title="この回の結果をツイート"></a>`);
-        }
     }
-
-    const blockTweetStr = contestResults.length === 0 ? `@chokudai AtCoder初参加します！` :  getTweetStr(contestResults[contestResults.length - 1]);
-    const blockButtonStr = getButtonStr();
-    const blockTweetButton =
-`<a href="https://twitter.com/share?text=${blockTweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
-    class="btn btn-info pull-right"
-    rel="nofollow"
-    onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
-    id="${buttonID}">${blockButtonStr}</a>`;
-
-    const insertElem = getInsertElem();
-    insertElem.insertAdjacentHTML('beforebegin', blockTweetButton);
 
     // Tooltipの有効化
     $('[data-toggle="tooltip"]').tooltip();
 
 
-    // ある回のコンテストデータからツイート文字列を生成
+    // 最新のコンテストデータからブロックのボタン要素を取得
+    function getBlockTweetButton() {
+        const blockTweetStr = contestResults.length === 0 ? `@chokudai AtCoder初参加します！` :  getTweetStr(contestResults[contestResults.length - 1]);
+        const blockButtonStr = getBlockButtonStr();
+        const blockTweetDom =
+`<a href="https://twitter.com/share?text=${blockTweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
+    class="btn btn-info pull-right"
+    rel="nofollow"
+    onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
+    id="${buttonID}">${blockButtonStr}</a>`;
+        return blockTweetDom;
+    }
+
+    // コンテスト名を指定してインラインのボタン要素を取得
+    function getInlineTweetButton(contestName) {
+        const contestResult = contestResults.find(elem => elem.ContestName === contestName);
+        if (!contestResult) return;
+        const inlineTweetStr = getTweetStr(contestResult);
+        return (
+`<a href="https://twitter.com/share?text=${inlineTweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
+class="result-tweet-btn-inline" rel="nofollow"
+onclick="window.open((this.href),'twwindow','width=400, height=250, personalbar=0, toolbar=0, scrollbars=1'); return false;"
+data-toggle="tooltip"
+data-original-title="この回の結果をツイート"></a>`);
+    }
+
+    // ある回のコンテストデータからユーザー設定に応じたツイート文字列を生成
     function getTweetStr(contestResult) {
-        /*
-        sample1
-        1970/1/1 AtCoder Beginner Contest 999
-        Rank: 1(rated)
-        Perf: 1600(highest!)(inner: 9999)
-        Rating: 9999(+9999, highest!)
-
-        sample2
-        1970/1/1 AtCoder Beginner Contest 999
-        Rank: 1(unrated)
-        Perf: 0
-        Rating: 9999(+0)
-        */
-
         var ContestDate = getDate(contestResult.EndTime);
         var ContestName = contestResult.ContestName;
         var ContestScreenName = contestResult.ContestScreenName;
@@ -198,13 +190,13 @@ function drawTweetBtn() {
         return encodeURIComponent(tweetStr);
     }
 
-    function getButtonStr() {
+    function getBlockButtonStr() {
         if (contestResults.length === 0) {
             return `ツイート`;
         } else {
-            var latestContestResult = contestResults[contestResults.length - 1];
-            var contestDate = getDate(latestContestResult.EndTime);
-            var contestName = latestContestResult.ContestName;
+            const latestContestResult = contestResults[contestResults.length - 1];
+            const contestDate = getDate(latestContestResult.EndTime);
+            const contestName = latestContestResult.ContestName;
             return `${contestDate}<br>${contestName}<br>の結果をツイートする`;
         }
     }
@@ -214,12 +206,9 @@ function drawTweetBtn() {
         return time.format(settings.dateFormat);
     }
 
-    function getInsertElem() {
-        if(isHistoryPage()) {
-            return document.getElementById('history_wrapper');
-        } else {
-            return document.getElementsByTagName("p")[1];
-        }
+    function getBlockInsertElem() {
+        if (isHistoryPage()) return document.getElementById('history_wrapper');
+        else return document.getElementsByTagName("p")[1];
     }
 
     function removeTweetBtn() {
@@ -231,8 +220,8 @@ function drawTweetBtn() {
 // 設定画面の初期化
 // ・localStorageから初期設定を取得(未設定なら初期化)
 // ・設定ブロックを描画
-// ・ツイート文字列入力エリアを描画
-// ・ツイート文字列入力エリアの監視
+// ・設定入力エリアを描画
+// ・設定入力エリアの監視
 // ・他ウィンドウとの連携を設定
 function initSettingsArea() {
     const lsKey = 'AtCoder_Result_Tweet_Button_Settings';
@@ -241,19 +230,19 @@ function initSettingsArea() {
         setDefaultSettings();
     }
 
-    // 他ウィンドウで設定が更新された時に設定を更新、ツイートボタンを再描画
+    // 他ウィンドウで設定が更新された時に設定を更新、ツイートボタンを再描画、設定入力エリアを更新
     window.addEventListener("storage", event => {
         // console.log(event);
         if (event.key !== lsKey) return;
         settings = JSON.parse(event.newValue);
         // console.log(settings);
         drawTweetBtn();
-        drawTweetStrSettingsArea();
+        drawSettingsInputArea();
     });
 
     $('#main-container').append(getSettingsDiv());
 
-    // ツイート文字列入力エリアが更新されたとき、プレビューを更新
+    // 設定入力エリアが更新されたとき、プレビューを更新
     // エラーが無ければ設定を保存、ツイートボタンを再描画
     $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
         var newSettings = {};
@@ -271,10 +260,10 @@ function initSettingsArea() {
         }
     }));
 
-    drawTweetStrSettingsArea();
+    drawSettingsInputArea();
 
 
-    function drawTweetStrSettingsArea() {
+    function drawSettingsInputArea() {
         $('#tweetstr-settings-input').val(settings.tweetFormat);
         $('#tweetstr-settings-dateformat').val(settings.dateFormat);
         $('#tweetstr-settings-highestperformance').val(settings.PerformanceHighestString);
