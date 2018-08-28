@@ -137,6 +137,7 @@ function drawTweetBtn() {
     }
 
     // Tooltipの有効化
+    // 稀に失敗する(おま環かもしれない)
     $('[data-toggle="tooltip"]').tooltip();
 
 
@@ -168,23 +169,23 @@ data-original-title="この回の結果をツイート"></a>`);
 
     // ある回のコンテストデータからユーザー設定に応じたツイート文字列を生成
     function getTweetStr(contestResult) {
-        var ContestDate = getDate(contestResult.EndTime);
-        var ContestName = contestResult.ContestName;
-        var ContestScreenName = contestResult.ContestScreenName;
-        var ContestScreenName_Upper = ContestScreenName.toUpperCase();
-        var Rank = contestResult.Place;
-        var IsRated = contestResult.IsRated;
-        var PerformanceIsHighest = contestResult.PerformanceIsHighest;
-        var PerformanceHighestString = PerformanceIsHighest ? settings.PerformanceHighestString : '';
-        var Performance = contestResult.Performance;
-        var InnerPerformance = contestResult.InnerPerformance;
-        var RatingIsHighest = contestResult.RatingIsHighest;
-        var RatingHighestString = RatingIsHighest ? settings.RatingHighestString : '';
-        var NewRating = contestResult.NewRating;
-        var OldRating = contestResult.OldRating;
-        var Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`;  // + or -
+        const ContestDate = getDate(contestResult.EndTime);
+        const ContestName = contestResult.ContestName;
+        const ContestScreenName = contestResult.ContestScreenName;
+        const ContestScreenName_Upper = ContestScreenName.toUpperCase();
+        const Rank = contestResult.Place;
+        const IsRated = contestResult.IsRated;
+        const PerformanceIsHighest = contestResult.PerformanceIsHighest;
+        const PerformanceHighestString = PerformanceIsHighest ? settings.PerformanceHighestString : '';
+        const Performance = contestResult.Performance;
+        const InnerPerformance = contestResult.InnerPerformance;
+        const RatingIsHighest = contestResult.RatingIsHighest;
+        const RatingHighestString = RatingIsHighest ? settings.RatingHighestString : '';
+        const NewRating = contestResult.NewRating;
+        const OldRating = contestResult.OldRating;
+        const Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`;  // + or -
 
-        var tweetStr = eval(`\`${settings.tweetFormat}\``) + '\n';
+        const tweetStr = eval(`\`${settings.tweetFormat}\``) + '\n';
 
         // URI用のエンコーダを使用し、+や改行もうまく処理する
         return encodeURIComponent(tweetStr);
@@ -207,8 +208,7 @@ data-original-title="この回の結果をツイート"></a>`);
     }
 
     function getBlockInsertElem() {
-        if (isHistoryPage()) return document.getElementById('history_wrapper');
-        else return document.getElementsByTagName("p")[1];
+        return isHistoryPage() ? document.getElementById('history_wrapper') : document.getElementsByTagName("p")[1];
     }
 
     function removeTweetBtn() {
@@ -230,6 +230,27 @@ function initSettingsArea() {
         setDefaultSettings();
     }
 
+    $('#main-container').append(getSettingsDiv());
+
+    drawSettingsInputArea();
+
+    // 設定入力エリアが更新されたとき、プレビューを更新
+    // エラーが無ければ設定を保存、ツイートボタンを再描画
+    $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
+        const newSettings = {};
+        newSettings.dateFormat = $('#tweetstr-settings-dateformat').val();
+        newSettings.PerformanceHighestString = $('#tweetstr-settings-highestperformance').val();
+        newSettings.RatingHighestString = $('#tweetstr-settings-highestrating').val();
+        newSettings.tweetFormat = $('#tweetstr-settings-tweetformat').val();
+        const result = getSampleString(newSettings);
+        $('#tweetstr-settings-preview').val(result.preview);
+        if (result.success) {
+            settings = newSettings;
+            setSettingsToLS();
+            drawTweetBtn();
+        }
+    }));
+
     // 他ウィンドウで設定が更新された時に設定を更新、ツイートボタンを再描画、設定入力エリアを更新
     window.addEventListener("storage", event => {
         // console.log(event);
@@ -240,62 +261,45 @@ function initSettingsArea() {
         drawSettingsInputArea();
     });
 
-    $('#main-container').append(getSettingsDiv());
-
-    // 設定入力エリアが更新されたとき、プレビューを更新
-    // エラーが無ければ設定を保存、ツイートボタンを再描画
-    $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
-        var newSettings = {};
-        newSettings = settings;
-        newSettings.tweetFormat = $('#tweetstr-settings-input').val();
-        newSettings.dateFormat = $('#tweetstr-settings-dateformat').val();
-        newSettings.PerformanceHighestString = $('#tweetstr-settings-highestperformance').val();
-        newSettings.RatingHighestString = $('#tweetstr-settings-highestrating').val();
-        var result = getSampleString(newSettings);
-        $('#tweetstr-settings-preview').val(result[1]);
-        if(result[0]) {
-            settings = newSettings;
-            setSettingsToLS();
-            drawTweetBtn();
-        }
-    }));
-
-    drawSettingsInputArea();
-
 
     function drawSettingsInputArea() {
-        $('#tweetstr-settings-input').val(settings.tweetFormat);
         $('#tweetstr-settings-dateformat').val(settings.dateFormat);
         $('#tweetstr-settings-highestperformance').val(settings.PerformanceHighestString);
         $('#tweetstr-settings-highestrating').val(settings.RatingHighestString);
-        var result = getSampleString(settings);
-        $('#tweetstr-settings-preview').val(result[1]);
+        $('#tweetstr-settings-tweetformat').val(settings.tweetFormat);
+        const result = getSampleString(settings);
+        $('#tweetstr-settings-preview').val(result.preview);
     }
 
-    function getSampleString(settings) {
-        contestResult = {};
-        var ContestDate = moment().format(settings.dateFormat);
-        var ContestName = "AtCoder Grand Contest 999";
-        var ContestScreenName = "agc999";
-        var ContestScreenName_Upper = "AGC999";
-        var Rank = 100;
-        var IsRated = true;
-        var PerformanceIsHighest = true;
-        var PerformanceHighestString = settings.PerformanceHighestString;
-        var Performance = "3000";
-        var InnerPerformance = "3000";
-        var RatingIsHighest = true;
-        var RatingHighestString = settings.RatingHighestString;
-        var NewRating = "2400";
-        var OldRating = "2300";
-        var Diff = "+100";
+    function getSampleString(newSettings) {
+        const ContestDate = moment().format(newSettings.dateFormat);
+        const ContestName = "AtCoder Grand Contest 999";
+        const ContestScreenName = "agc999";
+        const ContestScreenName_Upper = "AGC999";
+        const Rank = 100;
+        const IsRated = true;
+        const PerformanceIsHighest = true;
+        const PerformanceHighestString = newSettings.PerformanceHighestString;
+        const Performance = "3000";
+        const InnerPerformance = "3000";
+        const RatingIsHighest = true;
+        const RatingHighestString = newSettings.RatingHighestString;
+        const NewRating = "2400";
+        const OldRating = "2300";
+        const Diff = "+100";
 
         try {
-            var tweetStr = eval(`\`${settings.tweetFormat}\``);
-            return [true,tweetStr];
+            const tweetStr = eval(`\`${newSettings.tweetFormat}\``);
+            return {
+                success: true,
+                preview: tweetStr,
+            };
         }
         catch (e){
-            return [false,e.message];
+            return {
+                success: false,
+                preview: e.message,
+            };
         }
     }
 
@@ -310,13 +314,13 @@ function initSettingsArea() {
     function setDefaultSettings() {
         settings = {};
         settings.dateFormat = 'Y/M/D';
+        settings.PerformanceHighestString = '(highest!)';
+        settings.RatingHighestString = ', highest!';
         settings.tweetFormat =
 `\${ContestDate} \${ContestName}
 Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
 Perf: \${Performance}\${PerformanceHighestString}\${(InnerPerformance !== Performance) ? \`(inner:\${InnerPerformance})\` : ''}
 Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
-        settings.PerformanceHighestString = '(highest!)';
-        settings.RatingHighestString = ', highest!';
         setSettingsToLS();
     }
 
@@ -377,11 +381,11 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
                 </div>
             </div>
             <div class="form-group col-sm-4">
-                <label for="tweetstr-settings-input">
+                <label for="tweetstr-settings-tweetformat">
                     <span>ツイート文字列</span>
                     <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="${tweetFormatHint}" data-container="body" data-html="true"></span>
                 </label>
-                <textarea class="form-control" rows="6" id="tweetstr-settings-input"></textarea>
+                <textarea class="form-control" rows="6" id="tweetstr-settings-tweetformat"></textarea>
             </div>
             <div class="form-group col-sm-4">
                 <label for="tweetstr-settings-preview">
