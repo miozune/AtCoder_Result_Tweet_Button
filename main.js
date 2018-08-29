@@ -197,8 +197,7 @@ data-original-title="この回の結果をツイート"></a>`);
 // ・localStorageから初期設定を取得、未設定なら初期化
 // ・設定ブロックを描画
 // ・設定入力エリアを描画
-// ・設定入力エリアの監視
-// ・他ウィンドウとの連携を設定
+// ・設定パネル関連の発火イベントを設定
 function initSettingsArea() {
     const lsKey = 'AtCoder_Result_Tweet_Button_Settings';
     getSettingsFromLS();
@@ -210,8 +209,7 @@ function initSettingsArea() {
 
     drawSettingsInputArea();
 
-    settingsInputAreaObserver();
-    otherWindowObserver();
+    settingsObserver();
 
 
     function drawSettingsInputArea() {
@@ -255,6 +253,16 @@ function initSettingsArea() {
         }
     }
 
+    // 設定関連のイベント登録
+    // ・設定入力エリア
+    // ・他ウィンドウとの連携
+    // ・設定パネルのアニメーション
+    function settingsObserver() {
+        settingsInputAreaObserver();
+        otherWindowObserver();
+        settingsPanelAnimator();
+    }
+
     // 設定入力エリアが更新されたとき、プレビューを更新
     // エラーが無ければ設定を保存、ツイートボタンを再描画
     function settingsInputAreaObserver() {
@@ -283,6 +291,18 @@ function initSettingsArea() {
             // console.log(settings);
             drawTweetBtn();
             drawSettingsInputArea();
+        });
+    }
+
+    // 設定パネルのヘッダーのアニメーション
+    function settingsPanelAnimator() {
+        $('.panel-heading').click(() => {
+            // この段階で属性は変化していない
+            if ($('.panel-body').attr('aria-expanded') === 'true') {
+                $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-down');
+            } else {
+                $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-up');
+            }
         });
     }
 
@@ -370,19 +390,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
             </div>
         </div>
     </div>
-</div>
-<script type="text/javascript">
-    $(() => {
-        $('.panel-heading').click(() => {
-            // この段階で属性は変化していない
-            if ($('.panel-body').attr('aria-expanded') === 'true') {
-                $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-down');
-            } else {
-                $('#dropdown-icon').attr('class', 'glyphicon glyphicon-chevron-up');
-            }
-        });
-    });
-</script>`;
+</div>`;
 
         return settingsDom;
     }
