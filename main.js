@@ -9,9 +9,6 @@
 // @match        https://beta.atcoder.jp/users/*
 // @match        https://atcoder.jp/user/*
 // @exclude      https://beta.atcoder.jp/users/*/history/json
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
-// @require      https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js
-// @require      https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js
 // ==/UserScript==
 
 
@@ -114,6 +111,7 @@ function drawTweetBtn() {
     }
 
     // Tooltipの有効化
+    // 稀に失敗する(おま環かもしれない)
     $('[data-toggle="tooltip"]').tooltip();
 
 
