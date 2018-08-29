@@ -194,7 +194,7 @@ data-original-title="この回の結果をツイート"></a>`);
 
 
 // 設定画面の初期化
-// ・localStorageから初期設定を取得(未設定なら初期化)
+// ・localStorageから初期設定を取得、未設定なら初期化
 // ・設定ブロックを描画
 // ・設定入力エリアを描画
 // ・設定入力エリアの監視
@@ -210,32 +210,8 @@ function initSettingsArea() {
 
     drawSettingsInputArea();
 
-    // 設定入力エリアが更新されたとき、プレビューを更新
-    // エラーが無ければ設定を保存、ツイートボタンを再描画
-    $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
-        const newSettings = {};
-        newSettings.dateFormat = $('#tweetstr-settings-dateformat').val();
-        newSettings.PerformanceHighestString = $('#tweetstr-settings-highestperformance').val();
-        newSettings.RatingHighestString = $('#tweetstr-settings-highestrating').val();
-        newSettings.tweetFormat = $('#tweetstr-settings-tweetformat').val();
-        const result = getSampleString(newSettings);
-        $('#tweetstr-settings-preview').val(result.preview);
-        if (result.success) {
-            settings = newSettings;
-            setSettingsToLS();
-            drawTweetBtn();
-        }
-    }));
-
-    // 他ウィンドウで設定が更新された時に設定を更新、ツイートボタンを再描画、設定入力エリアを更新
-    window.addEventListener("storage", event => {
-        // console.log(event);
-        if (event.key !== lsKey) return;
-        settings = JSON.parse(event.newValue);
-        // console.log(settings);
-        drawTweetBtn();
-        drawSettingsInputArea();
-    });
+    settingsInputAreaObserver();
+    otherWindowObserver();
 
 
     function drawSettingsInputArea() {
@@ -277,6 +253,37 @@ function initSettingsArea() {
                 preview: e.message,
             };
         }
+    }
+
+    // 設定入力エリアが更新されたとき、プレビューを更新
+    // エラーが無ければ設定を保存、ツイートボタンを再描画
+    function settingsInputAreaObserver() {
+        $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
+            const newSettings = {};
+            newSettings.dateFormat = $('#tweetstr-settings-dateformat').val();
+            newSettings.PerformanceHighestString = $('#tweetstr-settings-highestperformance').val();
+            newSettings.RatingHighestString = $('#tweetstr-settings-highestrating').val();
+            newSettings.tweetFormat = $('#tweetstr-settings-tweetformat').val();
+            const result = getSampleString(newSettings);
+            $('#tweetstr-settings-preview').val(result.preview);
+            if (result.success) {
+                settings = newSettings;
+                setSettingsToLS();
+                drawTweetBtn();
+            }
+        }));
+    }
+
+    // 他ウィンドウで設定が更新された時に設定を再取得、ツイートボタンを再描画、設定入力エリアを更新
+    function otherWindowObserver() {
+        window.addEventListener("storage", event => {
+            // console.log(event);
+            if (event.key !== lsKey) return;
+            settings = JSON.parse(event.newValue);
+            // console.log(settings);
+            drawTweetBtn();
+            drawSettingsInputArea();
+        });
     }
 
     function setDefaultSettings() {
