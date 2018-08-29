@@ -72,32 +72,6 @@ drawTweetBtn();
 
 
 
-// 必要なcssを挿入する
-function appendStyles() {
-    const css =
-`a.result-tweet-btn-inline {
-    display: inline-block;
-    margin: -4px 2px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    border-radius: 4px;
-    background-image: url(/public/img/share/twitter.png);
-}
-#tweetstr-settings {
-    margin-top: 10px;
-}
-.tooltip-inner {
-    max-width: 200px;
-}
-.panel-heading {
-    cursor: pointer;
-}`;
-
-    $('head').append(`<style>${css}</style>`);
-}
-
-
 // ajaxで取得したコンテストデータを整形して返す
 function shapeData(data){
     let maxPerf = -1;
@@ -305,14 +279,6 @@ function initSettingsArea() {
         }
     }
 
-    function getSettingsFromLS() {
-        settings = JSON.parse(localStorage.getItem(lsKey));
-    }
-
-    function setSettingsToLS() {
-        localStorage.setItem(lsKey, JSON.stringify(settings));
-    }
-
     function setDefaultSettings() {
         settings = {};
         settings.dateFormat = 'Y/M/D';
@@ -413,6 +379,14 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 
         return settingsDom;
     }
+
+    function getSettingsFromLS() {
+        settings = JSON.parse(localStorage.getItem(lsKey));
+    }
+
+    function setSettingsToLS() {
+        localStorage.setItem(lsKey, JSON.stringify(settings));
+    }
 }
 
 
@@ -423,6 +397,32 @@ function getContestResults() {
         dataType: 'json',
         url: `/users/${userScreenName}/history/json`
     });
+}
+
+
+// 必要なcssを挿入する
+function appendStyles() {
+    const css =
+`a.result-tweet-btn-inline {
+    display: inline-block;
+    margin: -4px 2px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    background-image: url(/public/img/share/twitter.png);
+}
+#tweetstr-settings {
+    margin-top: 10px;
+}
+.tooltip-inner {
+    max-width: 200px;
+}
+.panel-heading {
+    cursor: pointer;
+}`;
+
+    $('head').append(`<style>${css}</style>`);
 }
 
 
