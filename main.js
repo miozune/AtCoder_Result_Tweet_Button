@@ -54,11 +54,11 @@ let settings;
 // ・コンテストデータを取得、加工
 // ・ツイートボタンの描画
 appendStyles();
-initSettingsArea();
+await initSettingsArea();
 const rawContestResults = await getContestResults();
 const contestResults = shapeData(rawContestResults);
 // console.log(contestResults);
-drawTweetBtn();
+await drawTweetBtn();
 
 
 
@@ -88,22 +88,22 @@ function shapeData(data){
 
 
 // ブロック及びインラインのツイートボタンを描画
-function drawTweetBtn() {
+async function drawTweetBtn() {
     const buttonID = 'result-tweet-btn';
 
     // 繰り返し呼び出されるので挿入前に既存要素を削除
     removeTweetBtn();
 
     // ブロックのボタンを描画
-    const blockTweetButton = getBlockTweetButton();
+    const blockTweetButton = await getBlockTweetButton();
     const blockInsertElem = getBlockInsertElem();
     blockInsertElem.insertAdjacentHTML('beforebegin', blockTweetButton);
 
     // 「コンテスト成績表」のページならインラインのボタンを描画
     if (isHistoryPage()) {
-        $('#history > tbody .text-left').each((_, elem) => {
+        $('#history > tbody .text-left').each(async (_, elem) => {
             const contestName = $('a', elem)[0].textContent;
-            const inlineTweetButton = getInlineTweetButton(contestName);
+            const inlineTweetButton = await getInlineTweetButton(contestName);
             $(elem).append(inlineTweetButton);
         });
         // 位置調節
@@ -116,8 +116,8 @@ function drawTweetBtn() {
 
 
     // 最新のコンテストデータからブロックのボタン要素を取得
-    function getBlockTweetButton() {
-        const blockTweetStr = contestResults.length === 0 ? `@chokudai AtCoder初参加します！` :  getTweetStr(contestResults[contestResults.length - 1]);
+    async function getBlockTweetButton() {
+        const blockTweetStr = contestResults.length === 0 ? `@chokudai AtCoder初参加します！` :  await getTweetStr(contestResults[contestResults.length - 1]);
         const blockButtonStr = getBlockButtonStr();
         const blockTweetDom =
 `<a href="https://twitter.com/share?text=${blockTweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
@@ -129,10 +129,10 @@ function drawTweetBtn() {
     }
 
     // コンテスト名を指定してインラインのボタン要素を取得
-    function getInlineTweetButton(contestName) {
+    async function getInlineTweetButton(contestName) {
         const contestResult = contestResults.find(elem => elem.ContestName === contestName);
         if (!contestResult) return;
-        const inlineTweetStr = getTweetStr(contestResult);
+        const inlineTweetStr = await getTweetStr(contestResult);
         return (
 `<a href="https://twitter.com/share?text=${inlineTweetStr}&url=https://greasyfork.org/ja/scripts/370227-atcoder-result-tweet-button"
 class="result-tweet-btn-inline" rel="nofollow"
@@ -142,7 +142,7 @@ data-original-title="この回の結果をツイート"></a>`);
     }
 
     // ある回のコンテストデータからユーザー設定に応じたツイート文字列を生成
-    function getTweetStr(contestResult) {
+    async function getTweetStr(contestResult) {
         const ContestDate = getDate(contestResult.EndTime);
         const ContestName = contestResult.ContestName;
         const ContestScreenName = contestResult.ContestScreenName;
@@ -158,6 +158,9 @@ data-original-title="この回の結果をツイート"></a>`);
         const NewRating = contestResult.NewRating;
         const OldRating = contestResult.OldRating;
         const Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`;  // + or -
+        const EndTime = moment(contestResult.EndTime);
+        const ACs = await getACsStr(contestResult);
+        // console.log(ACs);
 
         const tweetStr = eval(`\`${settings.tweetFormat}\``) + '\n';
 
@@ -174,6 +177,49 @@ data-original-title="この回の結果をツイート"></a>`);
             const contestName = latestContestResult.ContestName;
             return `${contestDate}<br>${contestName}<br>の結果をツイートする`;
         }
+    }
+
+    async function getACsStr(contestResult) {
+        const ACsStrInLS = getItemFromLS(contestResult.ContestScreenName);
+        if (ACsStrInLS) return ACsStrInLS;
+
+        const standingsData = await getStandingsData(contestResult.ContestScreenName);
+        const taskData = standingsData.TaskInfo;
+        const submissionData = standingsData.StandingsData[contestResult.Place-1].TaskResults;
+        ACsData = [];
+
+        for (let taskScreenName in submissionData) {
+            const submission = submissionData[taskScreenName];
+            if (submission.Status === 1) {
+                ACsData.push(`${getTaskString(taskScreenName)}(${getSubmissionTime(submission.Elapsed)})`);
+            }
+        }
+
+        const ACsStr = ACsData.length ? ACsData.join(' ') : 'No AC';
+        setItemToLS(contestResult.ContestScreenName, ACsStr);
+        // console.log(`set ${contestResult.ContestScreenName} to LS`);
+        return ACsStr;
+
+        function getSubmissionTime(time) {
+            const sec = time / 1000000000;
+            return `${parseInt(sec/60)}:${moment({seconds: sec%60}).format('ss')}`;
+        }
+
+        function getTaskString(taskScreenName) {
+            return taskData.filter(task => task.TaskScreenName === taskScreenName)[0].Assignment;
+        }
+
+        // function getPenaltyString(penalty) {
+        //     return penalty === 0 ? '' : `(${penalty})`;
+        // }
+    }
+
+    function getStandingsData(ContestScreenName) {
+        return $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: `https://beta.atcoder.jp/contests/${ContestScreenName}/standings/json`,
+        });
     }
 
     function getDate(endtimestr) {
@@ -196,9 +242,9 @@ data-original-title="この回の結果をツイート"></a>`);
 // ・設定ブロックを描画
 // ・設定入力エリアを描画
 // ・設定パネル関連の発火イベントを設定
-function initSettingsArea() {
-    const lsKey = 'AtCoder_Result_Tweet_Button_Settings';
-    getSettingsFromLS();
+async function initSettingsArea() {
+    const SETTINGS_LSKEY = 'AtCoder_Result_Tweet_Button_Settings';
+    settings = getItemFromLS(SETTINGS_LSKEY);
     if (!settings) {
         setDefaultSettings();
     }
@@ -207,7 +253,7 @@ function initSettingsArea() {
 
     drawSettingsInputArea();
 
-    settingsObserver();
+    await settingsObserver();
 
 
     function drawSettingsInputArea() {
@@ -224,6 +270,7 @@ function initSettingsArea() {
         const ContestName = "AtCoder Grand Contest 999";
         const ContestScreenName = "agc999";
         const ContestScreenName_Upper = "AGC999";
+        const ACs = "A(1:00) B(5:20) C(25:30)";
         const Rank = 100;
         const IsRated = true;
         const PerformanceIsHighest = true;
@@ -255,16 +302,16 @@ function initSettingsArea() {
     // ・設定入力エリア
     // ・他ウィンドウとの連携
     // ・設定パネルのアニメーション
-    function settingsObserver() {
-        settingsInputAreaObserver();
+    async function settingsObserver() {
+        await settingsInputAreaObserver();
         otherWindowObserver();
         settingsPanelAnimator();
     }
 
     // 設定入力エリアが更新されたとき、プレビューを更新
     // エラーが無ければ設定を保存、ツイートボタンを再描画
-    function settingsInputAreaObserver() {
-        $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
+    async function settingsInputAreaObserver() {
+        $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((async () => {
             const newSettings = {};
             newSettings.dateFormat = $('#tweetstr-settings-dateformat').val();
             newSettings.PerformanceHighestString = $('#tweetstr-settings-highestperformance').val();
@@ -274,20 +321,20 @@ function initSettingsArea() {
             $('#tweetstr-settings-preview').val(result.preview);
             if (result.success) {
                 settings = newSettings;
-                setSettingsToLS();
-                drawTweetBtn();
+                setItemToLS(SETTINGS_LSKEY, settings);
+                await drawTweetBtn();
             }
         }));
     }
 
     // 他ウィンドウで設定が更新された時に設定を再取得、ツイートボタンを再描画、設定入力エリアを更新
     function otherWindowObserver() {
-        window.addEventListener("storage", event => {
+        window.addEventListener("storage", async event => {
             // console.log(event);
-            if (event.key !== lsKey) return;
+            if (event.key !== SETTINGS_LSKEY) return;
             settings = JSON.parse(event.newValue);
             // console.log(settings);
-            drawTweetBtn();
+            await drawTweetBtn();
             drawSettingsInputArea();
         });
     }
@@ -311,10 +358,11 @@ function initSettingsArea() {
         settings.RatingHighestString = ', highest!';
         settings.tweetFormat =
 `\${ContestDate} \${ContestName}
+AC: \${ACs}
 Rank: \${Rank}(\${IsRated ? 'rated' : 'unrated'})
 Perf: \${Performance}\${PerformanceHighestString}\${(InnerPerformance !== Performance) ? \`(inner:\${InnerPerformance})\` : ''}
 Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
-        setSettingsToLS();
+        setItemToLS(SETTINGS_LSKEY, settings);
     }
 
     function getSettingsDiv() {
@@ -326,6 +374,7 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 <br>ContestName
 <br>ContestScreenName (短縮表記)
 <br>ContestScreenName_Upper
+<br>ACs (ACした問題と提出時間)
 <br>Rank
 <br>ordinalString (序数表記する関数)
 <br>IsRated (bool)
@@ -392,14 +441,6 @@ Rating: \${NewRating}(\${Diff}\${RatingHighestString})`;
 
         return settingsDom;
     }
-
-    function getSettingsFromLS() {
-        settings = JSON.parse(localStorage.getItem(lsKey));
-    }
-
-    function setSettingsToLS() {
-        localStorage.setItem(lsKey, JSON.stringify(settings));
-    }
 }
 
 
@@ -449,6 +490,16 @@ function isMyPage() {
     return (isHistoryPage() && document.URL.match(`/${userScreenName}/history`)) || (!isHistoryPage() && document.URL.match(`/${userScreenName}`));
 }
 
+function getItemFromLS(key) {
+    return JSON.parse(localStorage.getItem(key));
+}
+
+function setItemToLS(key, item) {
+    localStorage.setItem(key, JSON.stringify(item));
+}
+
+
+// 文字列設定画面で使える関数
 function ordinalString(i) {
     const j = i % 10;
     const k = i % 100;
