@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         AtCoder_Result_Tweet_Button
 // @namespace    https://greasyfork.org/ja/scripts/370227
-// @version      1.2.3
+// @version      1.2.4
 // @description  AtCoderのユーザーページに最後に参加したコンテストの情報をツイートするボタンを追加します
 // @author       miozune, keymoon
 // @license      MIT
