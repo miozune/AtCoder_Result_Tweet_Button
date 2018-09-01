@@ -159,7 +159,8 @@ data-original-title="この回の結果をツイート"></a>`);
         const OldRating = contestResult.OldRating;
         const Diff = `${(contestResult.Diff >= 0) ? '+' : ''}${contestResult.Diff}`;  // + or -
 
-        const tweetStr = eval(`\`${settings.tweetFormat}\``) + '\n';
+        // URL23字、自動挿入スペース1字、改行1字
+        const tweetStr = trimForTweet(eval(`\`${settings.tweetFormat}\``), 255) + '\n';
 
         // URI用のエンコーダを使用し、+や改行もうまく処理する
         return encodeURIComponent(tweetStr);
@@ -447,6 +448,36 @@ function isHistoryPage() {
 function isMyPage() {
     // history*さんを回避
     return (isHistoryPage() && document.URL.match(`/${userScreenName}/history`)) || (!isHistoryPage() && document.URL.match(`/${userScreenName}`));
+}
+
+function trimForTweet(str, limit=280) {
+    let cumulative_sum = [0];
+    for (let c of str) {
+        if (isHalf(c)) cumulative_sum.push(cumulative_sum[cumulative_sum.length-1] + 1);
+        else cumulative_sum.push(cumulative_sum[cumulative_sum.length-1] + 2);
+    }
+    cumulative_sum = cumulative_sum.slice(1, cumulative_sum.length);
+
+    return limit >= cumulative_sum[cumulative_sum.length-1] ? str : str.slice(0, bisect_right(cumulative_sum, limit-2)) + '…';
+
+    function isHalf(c){
+        if ((0 <= c.charCodeAt(0) && c.charCodeAt(0) <= 4351) ||
+            (8192 <= c.charCodeAt(0) && c.charCodeAt(0) <= 8205) ||
+            (8208 <= c.charCodeAt(0) && c.charCodeAt(0) <= 8223) ||
+            (8242 <= c.charCodeAt(0) && c.charCodeAt(0) <= 8247))
+            return true;
+    }
+}
+
+function bisect_right(arr, x) {
+    let low = 0;
+    let high = arr.length;
+    while (low < high) {
+        let mid = parseInt((low + high)/2);
+        if (x < arr[mid]) high = mid;
+        else low = mid + 1;
+    }
+    return low;
 }
 
 function ordinalString(i) {
