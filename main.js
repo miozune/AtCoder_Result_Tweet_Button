@@ -180,14 +180,22 @@ data-original-title="この回の結果をツイート"></a>`);
     }
 
     async function getACsStr(contestResult) {
-        const ACsStrInLS = getItemFromLS(contestResult.ContestScreenName);
-        if (ACsStrInLS) return ACsStrInLS;
+        let ACsItem = getItemFromLS(contestResult.ContestScreenName);
+        let taskData;
+        let submissionData;
+        if (!ACsItem) {
+            const standingsData = await getStandingsData(contestResult.ContestScreenName);
+            taskData = standingsData.TaskInfo;
+            submissionData = standingsData.StandingsData[contestResult.Place-1].TaskResults;
+            ACsItem = {'taskData': taskData, 'submissionData': submissionData};
+            setItemToLS(contestResult.ContestScreenName, ACsItem);
+            // console.log(`set ${contestResult.ContestScreenName} to LS`);
+        } else {
+            taskData = ACsItem.taskData;
+            submissionData = ACsItem.submissionData;
+        }
 
-        const standingsData = await getStandingsData(contestResult.ContestScreenName);
-        const taskData = standingsData.TaskInfo;
-        const submissionData = standingsData.StandingsData[contestResult.Place-1].TaskResults;
         ACsData = [];
-
         for (let taskScreenName in submissionData) {
             const submission = submissionData[taskScreenName];
             if (submission.Status === 1) {
@@ -196,8 +204,6 @@ data-original-title="この回の結果をツイート"></a>`);
         }
 
         const ACsStr = ACsData.length ? ACsData.join(' ') : 'No AC';
-        setItemToLS(contestResult.ContestScreenName, ACsStr);
-        // console.log(`set ${contestResult.ContestScreenName} to LS`);
         return ACsStr;
 
         function getSubmissionTime(time) {
