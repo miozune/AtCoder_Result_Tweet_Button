@@ -80,7 +80,7 @@ function drawTweetBtn() {
     // ブロックのボタンを描画
     const blockTweetButton = getBlockTweetButton();
     const blockInsertElem = getBlockInsertElem();
-    blockInsertElem.insertAdjacentHTML('beforebegin', blockTweetButton);
+    blockInsertElem.insertAdjacentHTML('beforeend', blockTweetButton);
 
     // 「コンテスト成績表」のページならインラインのボタンを描画
     if (isHistoryPage()) {
@@ -166,7 +166,7 @@ data-original-title="この回の結果をツイート"></a>`);
     }
 
     function getBlockInsertElem() {
-        return isHistoryPage() ? document.getElementById('history_wrapper') : document.getElementsByTagName("p")[1];
+        return isHistoryPage() ? document.getElementById('history_wrapper').children[0] : document.getElementsByTagName("p")[1];
     }
 
     function removeTweetBtn() {
@@ -187,7 +187,7 @@ function initSettingsArea() {
         setDefaultSettings();
     }
 
-    $('#main-container').append(getSettingsDiv());
+    $('#main-container').children('hr').before(getSettingsDiv());
 
     drawSettingsInputArea();
 
