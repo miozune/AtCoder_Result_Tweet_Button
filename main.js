@@ -6,33 +6,16 @@
 // @author       miozune, keymoon
 // @license      MIT
 // @supportURL   https://github.com/miozune/AtCoder_Result_Tweet_Button
-// @match        https://beta.atcoder.jp/users/*
-// @match        https://atcoder.jp/user/*
-// @exclude      https://beta.atcoder.jp/users/*/history/json
+// @match        https://atcoder.jp/users/*
+// @exclude      https://atcoder.jp/users/*/history/json
 // ==/UserScript==
 
 
-// userScreenNameはbeta.atcoder.jpのグローバル変数
-// atcoder.jp(非beta版サイト)はuserScreenNameおよび/history/jsonをサポートしていない
+// userScreenNameはatcoder.jpのグローバル変数
 
 
 
 (async () => {
-
-// beta版に誘導
-if(!document.URL.match('//beta')) {
-    const betaLink = "beta版".link(getBetaURL());
-    $("#main-div > .container").prepend(getWarning(`このサイトは${betaLink}ではありません。AtCoder_Result_Tweet_Buttonは${betaLink}でのみ動作します`));
-    return;
-
-    function getWarning(content) {
-        return `<div class="alert alert-warning" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="閉じる"><span aria-hidden="true">×</span></button>${content}</div>`;
-    }
-
-    function getBetaURL() {
-        return `https://beta.atcoder.jp${document.location.pathname.replace('user', 'users')}`;
-    }
-}
 
 // 自分のユーザーページでなければボタンを表示しない
 if (!isMyPage()) {
