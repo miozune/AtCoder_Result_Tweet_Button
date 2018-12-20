@@ -8,6 +8,7 @@
 // @supportURL   https://github.com/miozune/AtCoder_Result_Tweet_Button
 // @match        https://atcoder.jp/users/*
 // @exclude      https://atcoder.jp/users/*/history/json
+// @require      https://underscorejs.org/underscore-min.js
 // ==/UserScript==
 
 
@@ -248,7 +249,7 @@ function initSettingsArea() {
     // 設定入力エリアが更新されたとき、プレビューを更新
     // エラーが無ければ設定を保存、ツイートボタンを再描画
     function settingsInputAreaObserver() {
-        $('#tweetstr-settings textarea, #tweetstr-settings input').keyup((() => {
+        $('#tweetstr-settings textarea, #tweetstr-settings input').keyup(_.debounce(() => {
             const newSettings = {};
             newSettings.dateFormat = $('#tweetstr-settings-dateformat').val();
             newSettings.PerformanceHighestString = $('#tweetstr-settings-highestperformance').val();
@@ -261,7 +262,7 @@ function initSettingsArea() {
                 setSettingsToLS();
                 drawTweetBtn();
             }
-        }));
+        }, 300));
     }
 
     // 他ウィンドウで設定が更新された時に設定を再取得、ツイートボタンを再描画、設定入力エリアを更新
