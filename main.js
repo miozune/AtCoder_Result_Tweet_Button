@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/miozune/AtCoder_Result_Tweet_Button
 // @match        https://atcoder.jp/users/*
 // @exclude      https://atcoder.jp/users/*/history/json
-// @require      https://underscorejs.org/underscore-min.js
+// @require      https://unpkg.com/underscore@1.9.1/underscore-min.js
 // ==/UserScript==
 
 
